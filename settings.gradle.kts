@@ -40,6 +40,22 @@ pluginManagement {
 dependencyResolutionManagement {
   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
+    // SWARM: libsignal comes from the SWARM build, which adds the SWARM network environment and nothing else
+    // (Swarm-Official/swarm-libsignal, release swarm-libsignal-0.102.2-swarm.1, docs/SWARM-MOBILE.md on branch
+    // swarm-v0.102.2). exclusiveContent makes it the only repository Gradle asks for these two modules, so a
+    // stray request for upstream's build fails instead of silently resolving Signal's.
+    exclusiveContent {
+      forRepository {
+        maven {
+          name = "SwarmLibsignal"
+          url = uri("https://raw.githubusercontent.com/Swarm-Official/swarm-libsignal/maven/")
+        }
+      }
+      filter {
+        includeModule("org.signal", "libsignal-android")
+        includeModule("org.signal", "libsignal-client")
+      }
+    }
     google()
     mavenCentral()
     mavenLocal()

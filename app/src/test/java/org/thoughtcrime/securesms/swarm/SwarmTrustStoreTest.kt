@@ -9,7 +9,7 @@ import assertk.assertThat
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
-import assertk.assertions.isTrue
+import assertk.assertions.isNull
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.junit.Test
 import java.security.KeyStore
@@ -58,27 +58,42 @@ class SwarmTrustStoreTest {
       }
     }
 
+    /**
+     * The JDK's own X.509 and PKIX implementations, named explicitly: the unit-test JVM may have other providers
+     * (Conscrypt, an older BouncyCastle) installed ahead of them by other tests.
+     */
+    private fun certificateFactory(): CertificateFactory = CertificateFactory.getInstance("X.509", "SUN")
+
+    /**
+     * Trust anchors from the store, re-parsed by the JDK's certificate factory. The objects BouncyCastle's key store
+     * hands back carry BouncyCastle key classes, and the JDK's EC signature code on the CI runner's JDK 21 does not
+     * accept those for P-384 (ISRG Root X2) - a test artefact, not something Android does.
+     */
     private fun anchors(store: KeyStore): Set<TrustAnchor> {
-      return store.aliases().toList().map { TrustAnchor(store.getCertificate(it) as X509Certificate, null) }.toSet()
+      return store.aliases().toList().map { alias ->
+        val encoded = store.getCertificate(alias).encoded
+        TrustAnchor(certificateFactory().generateCertificate(encoded.inputStream()) as X509Certificate, null)
+      }.toSet()
     }
 
     /** The chain chat.swarm.green served on 2026-09-27: leaf, YE2, ISRG Root YE (signed by X2), ISRG Root X2 (signed by X1). */
     private fun recordedChain(): List<X509Certificate> {
       val stream = SwarmTrustStoreTest::class.java.getResourceAsStream("/swarm/chat-swarm-green-chain-2026-09-27.pem")
         ?: error("missing test resource")
-      return stream.use { CertificateFactory.getInstance("X.509").generateCertificates(it).map { certificate -> certificate as X509Certificate } }
+      return stream.use { certificateFactory().generateCertificates(it).map { certificate -> certificate as X509Certificate } }
     }
 
-    private fun validates(path: List<X509Certificate>, anchors: Set<TrustAnchor>): Boolean {
+    /** Null when [path] validates to one of [anchors], otherwise why not. */
+    private fun validationProblem(path: List<X509Certificate>, anchors: Set<TrustAnchor>): String? {
       val parameters = PKIXParameters(anchors).apply {
         isRevocationEnabled = false
         date = CHAIN_VALID_AT
       }
       return try {
-        CertPathValidator.getInstance("PKIX").validate(CertificateFactory.getInstance("X.509").generateCertPath(path), parameters)
-        true
+        CertPathValidator.getInstance("PKIX", "SUN").validate(certificateFactory().generateCertPath(path), parameters)
+        null
       } catch (e: Exception) {
-        false
+        e.toString()
       }
     }
   }
@@ -106,8 +121,8 @@ class SwarmTrustStoreTest {
     assertThat(chain.first().subjectX500Principal.name).isEqualTo("CN=chat.swarm.green")
 
     // Ending at ISRG Root YE, whose certificate is signed by ISRG Root X2.
-    assertThat(validates(chain.take(3), anchors), "path to ISRG Root X2").isTrue()
+    assertThat(validationProblem(chain.take(3), anchors), "path to ISRG Root X2").isNull()
     // Ending at the cross-signed ISRG Root X2, signed by ISRG Root X1.
-    assertThat(validates(chain, anchors), "path to ISRG Root X1").isTrue()
+    assertThat(validationProblem(chain, anchors), "path to ISRG Root X1").isNull()
   }
 }

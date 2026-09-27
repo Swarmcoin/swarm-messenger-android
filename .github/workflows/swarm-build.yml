@@ -74,7 +74,19 @@ jobs:
         run: ./gradlew :Signal-Android:assembleWebsiteProdDebug --stacktrace
 
       - name: SWARM endpoint scan
-        run: python3 scripts/swarm/endpoint_scan.py --variant "$VARIANT" --mode "$SWARM_SCAN_MODE" | tee endpoint-scan.txt
+        run: |
+          set -o pipefail
+          python3 scripts/swarm/endpoint_scan.py --variant "$VARIANT" --mode "$SWARM_SCAN_MODE" | tee endpoint-scan.txt
+
+      - name: SWARM endpoints in BuildConfig
+        # The APK must be configured for SWARM's chat server and libsignal's SWARM environment. This is what a
+        # release is checked against again before anything is published.
+        run: |
+          set -euo pipefail
+          config=app/build/generated/source/buildConfig/websiteProd/debug/org/thoughtcrime/securesms/BuildConfig.java
+          grep -E ' (SIGNAL_URL|STORAGE_URL|SIGNAL_CDN_URL|LIBSIGNAL_NET_ENV|SWARM_LIBSIGNAL_NET|APPLICATION_ID) =' "$config" | sed 's/^ *//' | tee buildconfig-endpoints.txt
+          grep -q 'String SIGNAL_URL = "https://chat.swarm.green";' buildconfig-endpoints.txt || { echo "::error::BuildConfig.SIGNAL_URL is not https://chat.swarm.green"; exit 1; }
+          grep -q 'LIBSIGNAL_NET_ENV = org.signal.libsignal.net.Network.Environment.SWARM;' buildconfig-endpoints.txt || { echo "::error::libsignal is not on its SWARM environment"; exit 1; }
 
       - name: Collect the APKs and their SHA-256 sums
         id: collect
@@ -89,6 +101,7 @@ jobs:
             cp "$apk" "dist/swarm-messenger-android-${version}-${short_sha}-${abi:-apk}.apk"
           done
           cp endpoint-scan.txt dist/endpoint-scan.txt
+          cp buildconfig-endpoints.txt dist/buildconfig-endpoints.txt
           (cd dist && sha256sum *.apk > SHA256SUMS.txt && cat SHA256SUMS.txt)
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
@@ -167,6 +180,18 @@ jobs:
           name: swarm-messenger-android-apk
           path: dist
 
+      - name: Refuse to publish anything that is not a SWARM build
+        # Nothing reaches a release unless the endpoint scan ran in enforce mode with no failure and the APK's
+        # BuildConfig names SWARM's chat server and libsignal's SWARM environment. A build with Signal's
+        # servers in it must never be offered for download (planner rule, 2026-09-27).
+        run: |
+          set -euo pipefail
+          grep -qx 'SWARM endpoint scan, variant websiteProdDebug, mode enforce' dist/endpoint-scan.txt || { echo "::error::the endpoint scan did not run in enforce mode"; exit 1; }
+          grep -qE '^0 failure\(s\), [0-9]+ warning\(s\)$' dist/endpoint-scan.txt || { echo "::error::the endpoint scan reported failures"; exit 1; }
+          grep -qx 'public static final String SIGNAL_URL = "https://chat.swarm.green";' dist/buildconfig-endpoints.txt || { echo "::error::BuildConfig.SIGNAL_URL is not https://chat.swarm.green"; exit 1; }
+          grep -qx 'public static final org.signal.libsignal.net.Network.Environment LIBSIGNAL_NET_ENV = org.signal.libsignal.net.Network.Environment.SWARM;' dist/buildconfig-endpoints.txt || { echo "::error::libsignal is not on its SWARM environment"; exit 1; }
+          echo "SWARM build confirmed: scan enforced with no failure, SIGNAL_URL=https://chat.swarm.green, libsignal environment SWARM."
+
       - name: Publish the pre-release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -185,9 +210,9 @@ jobs:
           Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
           EOF
           if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$tag" dist/*.apk dist/SHA256SUMS.txt dist/endpoint-scan.txt --clobber --repo "$GITHUB_REPOSITORY"
+            gh release upload "$tag" dist/*.apk dist/SHA256SUMS.txt dist/endpoint-scan.txt dist/buildconfig-endpoints.txt --clobber --repo "$GITHUB_REPOSITORY"
           else
-            gh release create "$tag" dist/*.apk dist/SHA256SUMS.txt dist/endpoint-scan.txt \
+            gh release create "$tag" dist/*.apk dist/SHA256SUMS.txt dist/endpoint-scan.txt dist/buildconfig-endpoints.txt \
               --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --prerelease \
               --title "SWARM Messenger for Android $(date -u +%Y-%m-%d) (${GITHUB_SHA::7})" --notes-file notes.md
           fi

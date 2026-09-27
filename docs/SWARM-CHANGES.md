@@ -119,7 +119,7 @@ If the staging server is rebuilt, its parameters change: copy the four values fr
 `staging-public-params.json` into `app/build.gradle.kts` and update the trust root pinned in
 `SwarmEndpointsTest`.
 
-### libsignal, until the SWARM build of it is in
+### libsignal, until the SWARM build of it is in (superseded by section 5)
 
 libsignal's network stack takes an environment, not a host, and upstream libsignal 0.102.2 knows only
 Signal's staging and production. New `app/.../swarm/SwarmNetwork.kt`:
@@ -240,3 +240,41 @@ the two roots and not Signal's CA, and that it is a version-2 BKS file.
 **Proposed:** when Let's Encrypt stops sending the cross-signed certificates, only chains to
 `ISRG Root YE` / `ISRG Root YR` will be served; add those two roots then (same commands, from the JDK's
 `cacerts` once it carries them). Until then X1 and X2 are what the brief asked for and what validates.
+
+---
+
+## 5. libsignal: the SWARM build, on its SWARM environment
+
+**Status: implemented.** `org.signal:libsignal-android` / `libsignal-client` **0.102.2-swarm.1** from
+[Swarm-Official/swarm-libsignal](https://github.com/Swarm-Official/swarm-libsignal) (release
+`swarm-libsignal-0.102.2-swarm.1`, built from branch `swarm-v0.102.2` at `90a3a9ff6` by run 36353915436):
+upstream 0.102.2 plus the SWARM network environment and nothing else; the protocol and cryptography crates
+are byte-for-byte upstream. Followed exactly as its `docs/SWARM-MOBILE.md` says:
+
+| File | Change |
+| --- | --- |
+| `settings.gradle.kts` | an `exclusiveContent` repository `SwarmLibsignal` = `https://raw.githubusercontent.com/Swarm-Official/swarm-libsignal/maven/` for `org.signal:libsignal-android` and `org.signal:libsignal-client` only, so Gradle never asks Signal's artifact host for them |
+| `gradle/libs.versions.toml` | `libsignal-client = "0.102.2-swarm.1"` (both artifacts use it) |
+| `gradle/verification-metadata.xml` | the two components replaced by the release's `SHA256SUMS.txt` values: AAR `6edcc0cf…10ad7`, its `.module` `c8082e9d…bf73`, JAR `1b029d0e…f1b2`, its `.module` `75a52c03…9546` |
+| `app/build.gradle.kts` | `LIBSIGNAL_NET_ENV = Network.Environment.SWARM` (`chat.swarm.green`, TLS 1.3 to the public Let's Encrypt roots, HTTP/2 with the websocket and gRPC on one connection); `SWARM_LIBSIGNAL_NET = true`, so `SwarmNetwork.guard()` no longer blocks libsignal-net and the chat websocket is libsignal's `LibSignalChatConnection` again, as upstream. |
+
+The SWARM environment deploys no contact discovery, no SVR2/SVRB and no key transparency (placeholders on
+`service-not-deployed.swarm.invalid`) and runs no censorship-circumvention reflectors, so those features stay
+unavailable. The OkHttp websocket path in `SwarmNetwork` stays in the tree as the fallback for a build made
+against upstream libsignal (`SWARM_LIBSIGNAL_NET = false`), which also blocks every libsignal-net connection.
+
+## 6. Publishing only SWARM builds
+
+**Status: implemented.** Planner rule of 2026-09-27, after the first pre-release (the rebrand without the
+endpoints, `swarm-messenger-android-20260927-38f0ae7`) was published and then deleted: no build that carries
+Signal's servers may ever be offered for download.
+
+- Job `apk`, step "SWARM endpoints in BuildConfig": fails unless the built `BuildConfig.SIGNAL_URL` is
+  `https://chat.swarm.green` and `LIBSIGNAL_NET_ENV` is `Network.Environment.SWARM`; the relevant lines go
+  into `buildconfig-endpoints.txt`, which travels with the APKs.
+- Job `release`, step "Refuse to publish anything that is not a SWARM build": before any upload, checks
+  again that the endpoint scan ran in **enforce** mode with **0 failures** and that
+  `buildconfig-endpoints.txt` names `https://chat.swarm.green` and the SWARM environment. The release carries
+  both files.
+- A change reaches `swarm-main` (the only branch that publishes) only after the same commit has been green
+  on `swarm-next`.

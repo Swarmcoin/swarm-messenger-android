@@ -299,12 +299,13 @@ android {
     buildConfigField("String", "GIPHY_API_KEY", "\"\"")
     buildConfigField("String", "SIGNAL_CAPTCHA_URL", "\"https://chat.swarm.green/challenge/registration/generate.html\"")
     buildConfigField("String", "RECAPTCHA_PROOF_URL", "\"https://chat.swarm.green/challenge/generate.html\"")
-    buildConfigField("org.signal.libsignal.net.Network.Environment", "LIBSIGNAL_NET_ENV", "org.signal.libsignal.net.Network.Environment.PRODUCTION")
+    // SWARM: chat.swarm.green, from the SWARM build of libsignal (never Signal's STAGING or PRODUCTION).
+    buildConfigField("org.signal.libsignal.net.Network.Environment", "LIBSIGNAL_NET_ENV", "org.signal.libsignal.net.Network.Environment.SWARM")
     buildConfigField("int", "LIBSIGNAL_LOG_LEVEL", "org.signal.libsignal.protocol.logging.SignalProtocolLogger.INFO")
-    // SWARM: true only when libsignal carries the SWARM network environment (Swarm-Official/swarm-libsignal).
-    // With upstream libsignal it is false, and the app blocks every libsignal-net connection (see
-    // org.thoughtcrime.securesms.swarm.SwarmNetwork) so nothing can reach Signal's servers.
-    buildConfigField("boolean", "SWARM_LIBSIGNAL_NET", "false")
+    // SWARM: true when libsignal carries the SWARM network environment (Swarm-Official/swarm-libsignal), as it does
+    // from 0.102.2-swarm.1. Set it to false only with upstream libsignal: the app then blocks every libsignal-net
+    // connection (see org.thoughtcrime.securesms.swarm.SwarmNetwork) so nothing can reach Signal's servers.
+    buildConfigField("boolean", "SWARM_LIBSIGNAL_NET", "true")
     // SWARM: where the static files upstream fetches from updates2.signal.org live (release notes, emoji,
     // badges, calling assets).
     buildConfigField("String", "SWARM_STATIC_HOST", "\"static.swarm.green\"")

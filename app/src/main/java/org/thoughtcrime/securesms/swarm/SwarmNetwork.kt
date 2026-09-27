@@ -22,8 +22,9 @@ import java.util.Optional
  * libsignal's own network stack (`org.signal.libsignal.net.Network`) does not take a hostname. It takes an
  * environment, and upstream libsignal knows only two: Signal's staging and Signal's production. SWARM's
  * build of libsignal ([Swarm-Official/swarm-libsignal](https://github.com/Swarm-Official/swarm-libsignal))
- * adds `Network.Environment.SWARM` for `chat.swarm.green`. Until the app is built against it
- * ([BuildConfig.SWARM_LIBSIGNAL_NET] is false):
+ * adds `Network.Environment.SWARM` for `chat.swarm.green`, and the app is built against it (0.102.2-swarm.1,
+ * [BuildConfig.SWARM_LIBSIGNAL_NET] true), so [guard] is a no-op and the chat websocket is libsignal's own. Should the
+ * app ever be built against upstream libsignal ([BuildConfig.SWARM_LIBSIGNAL_NET] false):
  *
  * - every libsignal-net connection is refused ([guard] gives the [Network] an invalid proxy, which libsignal
  *   documents as "refuses to make any new connections"), so contact discovery, secure value recovery, key
