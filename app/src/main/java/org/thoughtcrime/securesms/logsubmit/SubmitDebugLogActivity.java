@@ -451,7 +451,7 @@ public class SubmitDebugLogActivity extends BaseActivity {
           ShareCompat.IntentBuilder.from(this)
                                    .setText(url)
                                    .setType("text/plain")
-                                   .setEmailTo(new String[] { "support@signal.org" })
+                                   .setEmailTo(new String[] { "support@swarm.green" })
                                    .startChooser();
         });
 

@@ -194,7 +194,9 @@ def scan_apk(report, apk):
             elif name.endswith(".dex"):
                 data = archive.read(info)
                 for domain in FORBIDDEN_DOMAINS + sorted(DEEP_LINK_DOMAINS):
-                    count = data.count(domain.encode("ascii"))
+                    # A whole host name, not a prefix of a Java package ("signal.me" in "signal.messages").
+                    pattern = re.compile(rb"(?<![A-Za-z0-9.-])(?:[A-Za-z0-9-]+\.)*" + re.escape(domain.encode("ascii")) + rb"(?![A-Za-z0-9_-])")
+                    count = len(pattern.findall(data))
                     if count:
                         dex_counts[domain] = dex_counts.get(domain, 0) + count
     for domain, count in sorted(dex_counts.items()):

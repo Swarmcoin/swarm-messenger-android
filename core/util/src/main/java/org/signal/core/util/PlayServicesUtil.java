@@ -14,6 +14,9 @@ public class PlayServicesUtil {
 
   private static final String TAG = Log.tag(PlayServicesUtil.class);
 
+  /** SWARM: see {@link #getPlayServicesStatus(Context)}. */
+  private static final boolean SWARM_NEVER_USES_PLAY_SERVICES = true;
+
   public enum PlayServicesStatus {
     SUCCESS,
     MISSING,
@@ -22,6 +25,13 @@ public class PlayServicesUtil {
   }
 
   public static PlayServicesStatus getPlayServicesStatus(Context context) {
+    // SWARM: SWARM Messenger does not use Google Play services (no FCM, no Firebase project, no Google
+    // sign-in or Maps). Reporting them missing puts the whole app on upstream's own path for phones
+    // without them: messages arrive over the persistent websocket.
+    if (SWARM_NEVER_USES_PLAY_SERVICES) {
+      return PlayServicesStatus.MISSING;
+    }
+
     int gcmStatus = 0;
 
     try {

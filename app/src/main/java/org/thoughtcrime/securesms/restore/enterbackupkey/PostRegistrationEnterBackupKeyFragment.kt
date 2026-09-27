@@ -35,7 +35,7 @@ import org.thoughtcrime.securesms.util.navigation.safeNavigate
 class PostRegistrationEnterBackupKeyFragment : ComposeFragment() {
   companion object {
     private val TAG = Log.tag(PostRegistrationEnterBackupKeyFragment::class)
-    private const val LEARN_MORE_URL = "https://support.signal.org/hc/articles/360007059752"
+    private const val LEARN_MORE_URL = "https://swarm.green/support"
   }
 
   private val viewModel by viewModels<PostRegistrationEnterBackupKeyViewModel>()

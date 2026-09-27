@@ -44,7 +44,7 @@ import org.thoughtcrime.securesms.util.navigation.safeNavigate
 class EnterBackupKeyFragment : ComposeFragment() {
 
   companion object {
-    private const val LEARN_MORE_URL = "https://support.signal.org/hc/articles/360007059752"
+    private const val LEARN_MORE_URL = "https://swarm.green/support"
   }
 
   private val sharedViewModel by activityViewModels<RegistrationViewModel>()

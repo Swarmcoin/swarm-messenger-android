@@ -12,4 +12,7 @@ package org.thoughtcrime.securesms.swarm
 object SwarmBuild {
   /** Alternate launcher icons. Upstream's alternates are Signal's logo in several colours. */
   const val ALTERNATE_APP_ICONS: Boolean = false
+
+  /** In-app donations. They pay Signal Technology Foundation through Signal's Stripe and PayPal accounts. */
+  const val DONATIONS: Boolean = false
 }

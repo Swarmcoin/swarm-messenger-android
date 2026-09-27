@@ -6,6 +6,7 @@ import org.signal.donations.PaymentSourceType
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.database.model.InAppPaymentReceiptRecord
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.swarm.SwarmBuild
 import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.LocaleRemoteConfig
 import org.thoughtcrime.securesms.util.RemoteConfig
@@ -24,10 +25,20 @@ object InAppDonations {
    * - Able to use PayPal and is in a region where it is able to be accepted.
    */
   fun hasAtLeastOnePaymentMethodAvailable(): Boolean {
+    // SWARM: donations go to Signal Technology Foundation through Signal's own payment accounts; SWARM
+    // Messenger offers none. With no payment method, every donation entry point stays hidden.
+    if (!SwarmBuild.DONATIONS) {
+      return false
+    }
+
     return isCreditCardAvailable() || isPayPalAvailable() || isGooglePayAvailable() || isSEPADebitAvailable() || isIDEALAvailable()
   }
 
   fun isDonationsPaymentSourceAvailable(paymentSourceType: PaymentSourceType, inAppPaymentType: InAppPaymentType): Boolean {
+    if (!SwarmBuild.DONATIONS) {
+      return false
+    }
+
     if (inAppPaymentType == InAppPaymentType.RECURRING_BACKUP) {
       error("Not supported.")
     }

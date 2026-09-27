@@ -6,6 +6,7 @@
 package org.thoughtcrime.securesms.service.webrtc
 
 import android.content.Context
+import org.thoughtcrime.securesms.BuildConfig
 import okio.IOException
 import org.signal.core.util.logging.Log
 import org.signal.ringrtc.CallException
@@ -32,7 +33,8 @@ object CallingAssets {
       assetGroup = "opus-dred",
       name = "calling-dred_weights-1_6_1-f4aed08a.bin",
       digest = "sdfpdb/u3wiTfBr2s0gx1LJX6jii4tquyax/UBThTGWTEXyOCSKjYmYV+9tKQZcO+Q1B1ReoGSW3VbvzeMGKaQ==",
-      url = "https://updates2.signal.org/static/android/calling/deep_plc-dred_weights-1_6_1-f4aed08a.bin",
+      // SWARM: fetched from SWARM's static host, never updates2.signal.org. The digest pins the exact bytes.
+      url = "https://${BuildConfig.SWARM_STATIC_HOST}/static/android/calling/deep_plc-dred_weights-1_6_1-f4aed08a.bin",
       size = 1998208
     )
   )

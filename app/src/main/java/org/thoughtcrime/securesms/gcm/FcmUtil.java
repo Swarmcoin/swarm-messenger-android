@@ -9,6 +9,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import org.signal.core.util.PlayServicesUtil;
 import org.signal.core.util.logging.Log;
 
 import java.util.Optional;
@@ -23,6 +24,11 @@ public final class FcmUtil {
    */
   @WorkerThread
   public static Optional<String> getToken(Context context) {
+    // SWARM: there is no Firebase project and no FCM in SWARM Messenger. Never initialise Firebase.
+    if (PlayServicesUtil.getPlayServicesStatus(context) != PlayServicesUtil.PlayServicesStatus.SUCCESS) {
+      return Optional.empty();
+    }
+
     String token = null;
 
     // Must be called manually if running outside of main process

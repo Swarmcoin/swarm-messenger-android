@@ -274,7 +274,7 @@ class RemoteBackupsSettingsFragment : ComposeFragment() {
     }
 
     override fun onFreeTierBackupSizeLearnMore() {
-      CommunicationActions.openBrowserLink(requireContext(), "https://support.signal.org/hc/articles/9708267671322")
+      CommunicationActions.openBrowserLink(requireContext(), "https://swarm.green/support")
     }
 
     override fun onTransferScanQrCodeClick() {

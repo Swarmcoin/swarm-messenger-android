@@ -146,7 +146,7 @@ fun DrawScope.drawQr(
 private fun Preview() {
   Surface {
     QrCode(
-      data = QrCodeData.forData("https://signal.org"),
+      data = QrCodeData.forData("https://swarm.green"),
       modifier = Modifier.size(350.dp)
     )
   }

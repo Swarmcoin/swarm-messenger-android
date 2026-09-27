@@ -259,23 +259,23 @@ android {
     vectorDrawables.useSupportLibrary = true
     project.ext.set("archivesBaseName", "SWARM-Messenger")
 
-    manifestPlaceholders["mapsKey"] = "AIzaSyCSx9xea86GwDKGznCAULE9Y5a8b-TfN9U"
+    manifestPlaceholders["mapsKey"] = "" // SWARM: upstream's key is Signal's; SWARM has none yet
 
     buildConfigField("long", "BUILD_TIMESTAMP", getLastCommitTimestamp() + "L")
     buildConfigField("String", "GIT_HASH", "\"${getGitHash()}\"")
-    buildConfigField("String", "SIGNAL_URL", "\"https://chat.signal.org\"")
-    buildConfigField("String", "STORAGE_URL", "\"https://storage.signal.org\"")
-    buildConfigField("String", "SIGNAL_CDN_URL", "\"https://cdn.signal.org\"")
-    buildConfigField("String", "SIGNAL_CDN2_URL", "\"https://cdn2.signal.org\"")
-    buildConfigField("String", "SIGNAL_CDN3_URL", "\"https://cdn3.signal.org\"")
-    buildConfigField("String", "SIGNAL_CDSI_URL", "\"https://cdsi.signal.org\"")
-    buildConfigField("String", "SIGNAL_SERVICE_STATUS_URL", "\"uptime.signal.org\"")
-    buildConfigField("String", "SIGNAL_SVR2_URL", "\"https://svr2.signal.org\"")
-    buildConfigField("String", "SIGNAL_SFU_URL", "\"https://sfu.voip.signal.org\"")
-    buildConfigField("String", "SIGNAL_STAGING_SFU_URL", "\"https://sfu.staging.voip.signal.org\"")
-    buildConfigField("String[]", "SIGNAL_SFU_INTERNAL_NAMES", "new String[]{\"Test\", \"Staging\", \"Development\"}")
-    buildConfigField("String[]", "SIGNAL_SFU_INTERNAL_URLS", "new String[]{\"https://sfu.test.voip.signal.org\", \"https://sfu.staging.voip.signal.org\", \"https://sfu.staging.test.voip.signal.org\"}")
-    buildConfigField("String", "CONTENT_PROXY_HOST", "\"contentproxy.signal.org\"")
+    buildConfigField("String", "SIGNAL_URL", "\"https://chat.swarm.green\"")
+    buildConfigField("String", "STORAGE_URL", "\"https://chat.swarm.green\"")
+    buildConfigField("String", "SIGNAL_CDN_URL", "\"https://cdn.chat.swarm.green\"")
+    buildConfigField("String", "SIGNAL_CDN2_URL", "\"https://cdn.chat.swarm.green\"")
+    buildConfigField("String", "SIGNAL_CDN3_URL", "\"https://cdn.chat.swarm.green\"")
+    buildConfigField("String", "SIGNAL_CDSI_URL", "\"https://cdsi.service-not-deployed.swarm.invalid\"")
+    buildConfigField("String", "SIGNAL_SERVICE_STATUS_URL", "\"uptime.swarm.green\"")
+    buildConfigField("String", "SIGNAL_SVR2_URL", "\"https://svr2.service-not-deployed.swarm.invalid\"")
+    buildConfigField("String", "SIGNAL_SFU_URL", "\"https://sfu.chat.swarm.green\"")
+    buildConfigField("String", "SIGNAL_STAGING_SFU_URL", "\"https://sfu.chat.swarm.green\"")
+    buildConfigField("String[]", "SIGNAL_SFU_INTERNAL_NAMES", "new String[]{}")
+    buildConfigField("String[]", "SIGNAL_SFU_INTERNAL_URLS", "new String[]{}")
+    buildConfigField("String", "CONTENT_PROXY_HOST", "\"contentproxy.chat.swarm.green\"")
     buildConfigField("int", "CONTENT_PROXY_PORT", "443")
     buildConfigField("String[]", "SIGNAL_SERVICE_IPS", rootProject.extra["service_ips"] as String)
     buildConfigField("String[]", "SIGNAL_STORAGE_IPS", rootProject.extra["storage_ips"] as String)
@@ -289,25 +289,32 @@ android {
     buildConfigField("String", "SIGNAL_AGENT", "\"OWA\"")
     buildConfigField("String", "SVR2_MRENCLAVE_LEGACY", "\"ced8217b26228e4b210c985786999d095c4958a94faf37b14acaf25c4cbb02a4\"")
     buildConfigField("String", "SVR2_MRENCLAVE", "\"fdbbacdc0c043d0d53fe1440f62728de0386f45ab0a275bd8f99e03a02af355e\"")
-    buildConfigField("String[]", "UNIDENTIFIED_SENDER_TRUST_ROOTS", "new String[]{ \"BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF\", \"BUkY0I+9+oPgDCn4+Ac6Iu813yvqkDr/ga8DzLxFxuk6\"}")
-    buildConfigField("String", "ZKGROUP_SERVER_PUBLIC_PARAMS", "\"AMhf5ywVwITZMsff/eCyudZx9JDmkkkbV6PInzG4p8x3VqVJSFiMvnvlEKWuRob/1eaIetR31IYeAbm0NdOuHH8Qi+Rexi1wLlpzIo1gstHWBfZzy1+qHRV5A4TqPp15YzBPm0WSggW6PbSn+F4lf57VCnHF7p8SvzAA2ZZJPYJURt8X7bbg+H3i+PEjH9DXItNEqs2sNcug37xZQDLm7X36nOoGPs54XsEGzPdEV+itQNGUFEjY6X9Uv+Acuks7NpyGvCoKxGwgKgE5XyJ+nNKlyHHOLb6N1NuHyBrZrgtY/JYJHRooo5CEqYKBqdFnmbTVGEkCvJKxLnjwKWf+fEPoWeQFj5ObDjcKMZf2Jm2Ae69x+ikU5gBXsRmoF94GXTLfN0/vLt98KDPnxwAQL9j5V1jGOY8jQl6MLxEs56cwXN0dqCnImzVH3TZT1cJ8SW1BRX6qIVxEzjsSGx3yxF3suAilPMqGRp4ffyopjMD1JXiKR2RwLKzizUe5e8XyGOy9fplzhw3jVzTRyUZTRSZKkMLWcQ/gv0E4aONNqs4P+NameAZYOD12qRkxosQQP5uux6B2nRyZ7sAV54DgFyLiRcq1FvwKw2EPQdk4HDoePrO/RNUbyNddnM/mMgj4FW65xCoT1LmjrIjsv/Ggdlx46ueczhMgtBunx1/w8k8V+l8LVZ8gAT6wkU5J+DPQalQguMg12Jzug3q4TbdHiGCmD9EunCwOmsLuLJkz6EcSYXtrlDEnAM+hicw7iergYLLlMXpfTdGxJCWJmP4zqUFeTTmsmhsjGBt7NiEB/9pFFEB3pSbf4iiUukw63Eo8Aqnf4iwob6X1QviCWuc8t0LUlT9vALgh/f2DPVOOmR0RW6bgRvc7DSF20V/omg+YBw==\"")
-    buildConfigField("String", "GENERIC_SERVER_PUBLIC_PARAMS", "\"AeCO67P9mIv1yUHkdeZ9JF789GDbox61GvTqq3S4kYc1ADUWxWHQygU390tv1oRWt9WjkdZlU7mKkifF59ftjE+2ZlMmxns6I+ySiLpR8FEmfu+TGpVp3zYTjNV93obJJTyBCCsSHVETCyQRbKdCyb5TMa6LGrvcZaX0Q/VAavhuNA/m4kSiRMgSnYrUjGhVekdDnF+7xioo4wvFnxjIDh7uJQrYOWD6MloNGX7St5gbysTuQQ7i/HI38b9V8x8mKazuDSXxB//BKGZx/XHkK8cHX+QK1MPxYUVM1/CBI5oW\"")
-    buildConfigField("String", "BACKUP_SERVER_PUBLIC_PARAMS", "\"AZwNSU55fsFCbgaxGRD11wO1juAs8Yr5GF8FPlGzzvdJJIKH5/4CC7ZJSOe3yL2vturVaRU2Cx0n751Vt8wkj1Y4pyiScu0/S10n647ipo+iq97JZQv+UOlwH8ThyNlGT5DfxXCwTqivxHuXvZpuezPgHk5Gxl5aC6xuNxOnwmFlmu4CeSgdhW8+Pp0vAJOQ1MsU2D0+/kzI+tU94nB3tybY/Ao1AcGW2q41uKQbnOJUWwmQaFT6s+xTISgzsg7CPox6oORGX8rnyk/9lic3DbGsUHctIVpMAl/ogJBb4aYC\"")
+    buildConfigField("String[]", "UNIDENTIFIED_SENDER_TRUST_ROOTS", "new String[]{ \"BSgjRy7ssr0kXjLd9fVTuWpomsxWMm31NG1TKTKbiyMu\" }")
+    buildConfigField("String", "ZKGROUP_SERVER_PUBLIC_PARAMS", "\"ALiTHZawCPzu7oxzV4uj85/ZyYVvhRMAD3MxOe/EDk1ZHFZl8nvlrGQmRIANbe4PeCJx9KX8li2Hljk1bGGRmGH0tG1oBXNgMtPmwXZWBhuRow6/VC9MY3ukK96Z5th9N4SsnmlnphqOXRdp684c5CeJHMIvg0ekA4LQZBdKBatykqv16cw4SdhxjzD7XjS+exHzmWtQ9vkxnVtYHcHv7lHcGngqHoejN6GY2lNjRpjfk46suXcs5ZNHyrrnpgZHTFTUfA0xLeXJgcguz7t6G947SSwE2UNqs/hW4OcL3gQSINrIBDbYeSWGpxXRKdPP0fqPZP/l+pGT/jiP8JEcN2J0yK2OOxfTy8oKbhsVfKtVV1AG65bF5g4uokX+Bg7ETDCDa2w6v22Do6FMQU1A9PGA00Eu4GTmZlAmdhMJvnYmImjW5DOVFTXs/Y+zqqKxUKDkjcaGv/T1UcGbIaM5tD8INedJ47AV5N9ZzZ0/e8Cweia0yoJsGANqj2H2FvuUb9wDR1qgABOKzfjOLXOXDdq3/kvUJY/ISxIryklRnVck6NLDxlBatzD1pil8LKQaku2mTk9GhtCh2GeSZgB4PBHga7od66Ih4YTYbS4X288OkKTT69ipLuNRxd0b3COiFegch7he5nENAuG/kiVKNqjIYwIu9FLrOVtYofhyg5czdEkvBKJNMd9S13fbrxp5OG2eJl9l8F6JZGyZ2ssN3QleylwbdeQ0AhcWGYi30X/j29nu+azy8BoXaFx5cJgkblQaQbCp5gLeJMuhnxC4ALYdMGH94br1ikkDHNr4v4kXSAUTG0zc57ZVyg+HW97do9CR7fY2IJfgIBjD+a5oPTmYbCXa8gPioryalANyeojdMXcQNYPFk9pqfA2ODTZzPg==\"")
+    buildConfigField("String", "GENERIC_SERVER_PUBLIC_PARAMS", "\"AMzkIq08/9rvWj/PjUTRuU/8HpBYY+FSy8+X8T0d2KFSPrKENjhXCoPuqZTzlYVkE+9gGBN7sjws1fxFG3XL1nma5fpw0ju+WhhmEyqcz8g9jpDljoD9SjbBnpO7q2rsPTgSyR2pW8V1XvKzx3bLLNuXESQVDj4tvpSKX5Dd7DEpiqDO2udZiukHu3O9hVeWvT4W4lyAs9ogSXSPNHrEhHSGDghBBOOYr+jNGO+x6dmy/K/tzH8KRQwRFmx6jpqqCPzKWF/CrhakFYQZu35xBmHbZe5djlu6UqkRfO4uAg4y\"")
+    buildConfigField("String", "BACKUP_SERVER_PUBLIC_PARAMS", "\"ALrEtWYxTWLCt5JL3BP5Hk6jXOJGCoAwr7RTyqLx+Bo7RMV7kCfCJAKbCi8ESsYxFBKJd+SzgpOeOMqr/Qvq127Cg76knUE8rPWPHjl6ZSLAbYWsglhxSQqU3qaCRN/cErYN8S2oc3xIfqSuq4AVqsFBiI3QaUNt7CXlWS9LeSl/VvrcEkmcmhsIOf0u3nhKIFlBa5tjb2ruAwFEiqIIFTA+XgDSX20BXhIQtrILLFBFWLo+xDb4MVkl6RzKXnt0b9jIC2GwOLp1pvoKE+aP808hTuEmNzfMGoJXR8X6DHoW\"")
     buildConfigField("String[]", "LANGUAGES", "new String[]{ ${languagesForBuildConfigProvider.get()} }")
     buildConfigField("int", "CANONICAL_VERSION_CODE", "$canonicalVersionCode")
     buildConfigField("String", "DEFAULT_CURRENCIES", "\"EUR,AUD,GBP,CAD,CNY\"")
-    buildConfigField("String", "GIPHY_API_KEY", "\"3o6ZsYH6U6Eri53TXy\"")
-    buildConfigField("String", "SIGNAL_CAPTCHA_URL", "\"https://signalcaptchas.org/registration/generate.html\"")
-    buildConfigField("String", "RECAPTCHA_PROOF_URL", "\"https://signalcaptchas.org/challenge/generate.html\"")
+    buildConfigField("String", "GIPHY_API_KEY", "\"\"")
+    buildConfigField("String", "SIGNAL_CAPTCHA_URL", "\"https://chat.swarm.green/challenge/registration/generate.html\"")
+    buildConfigField("String", "RECAPTCHA_PROOF_URL", "\"https://chat.swarm.green/challenge/generate.html\"")
     buildConfigField("org.signal.libsignal.net.Network.Environment", "LIBSIGNAL_NET_ENV", "org.signal.libsignal.net.Network.Environment.PRODUCTION")
     buildConfigField("int", "LIBSIGNAL_LOG_LEVEL", "org.signal.libsignal.protocol.logging.SignalProtocolLogger.INFO")
+    // SWARM: true only when libsignal carries the SWARM network environment (Swarm-Official/swarm-libsignal).
+    // With upstream libsignal it is false, and the app blocks every libsignal-net connection (see
+    // org.thoughtcrime.securesms.swarm.SwarmNetwork) so nothing can reach Signal's servers.
+    buildConfigField("boolean", "SWARM_LIBSIGNAL_NET", "false")
+    // SWARM: where the static files upstream fetches from updates2.signal.org live (release notes, emoji,
+    // badges, calling assets).
+    buildConfigField("String", "SWARM_STATIC_HOST", "\"static.swarm.green\"")
 
     buildConfigField("String", "BUILD_DISTRIBUTION_TYPE", "\"unset\"")
     buildConfigField("String", "BUILD_ENVIRONMENT_TYPE", "\"unset\"")
     buildConfigField("String", "BUILD_VARIANT_TYPE", "\"unset\"")
-    buildConfigField("String", "BADGE_STATIC_ROOT", "\"https://updates2.signal.org/static/badges/\"")
+    buildConfigField("String", "BADGE_STATIC_ROOT", "\"https://static.swarm.green/static/badges/\"")
     buildConfigField("String", "STRIPE_BASE_URL", "\"https://api.stripe.com/v1\"")
-    buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"pk_live_6cmGZopuTsV8novGgJJW9JpC00vLIgtQ1D\"")
+    buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"\"")
     buildConfigField("boolean", "TRACING_ENABLED", "false")
     buildConfigField("boolean", "LINK_DEVICE_UX_ENABLED", "false")
 
@@ -450,8 +457,9 @@ android {
 
     create("website") {
       dimension = "distribution"
-      buildConfigField("boolean", "MANAGES_APP_UPDATES", "true")
-      buildConfigField("String", "APK_UPDATE_MANIFEST_URL", "\"https://updates.signal.org/android/latest.json\"")
+      // SWARM: no self-update. Upstream's website build polls updates.signal.org and installs Signal's APK.
+      buildConfigField("boolean", "MANAGES_APP_UPDATES", "false")
+      buildConfigField("String", "APK_UPDATE_MANIFEST_URL", "null")
       buildConfigField("String", "BUILD_DISTRIBUTION_TYPE", "\"website\"")
     }
 
@@ -485,27 +493,13 @@ android {
 
       applicationIdSuffix = ".staging"
 
-      buildConfigField("String", "SIGNAL_URL", "\"https://chat.staging.signal.org\"")
-      buildConfigField("String", "STORAGE_URL", "\"https://storage-staging.signal.org\"")
-      buildConfigField("String", "SIGNAL_CDN_URL", "\"https://cdn-staging.signal.org\"")
-      buildConfigField("String", "SIGNAL_CDN2_URL", "\"https://cdn2-staging.signal.org\"")
-      buildConfigField("String", "SIGNAL_CDN3_URL", "\"https://cdn3-staging.signal.org\"")
-      buildConfigField("String", "SIGNAL_CDSI_URL", "\"https://cdsi.staging.signal.org\"")
-      buildConfigField("String", "SIGNAL_SVR2_URL", "\"https://svr2.staging.signal.org\"")
-      buildConfigField("String", "SVR2_MRENCLAVE_LEGACY", "\"3c699f4975aaa3d172c0aad042f94f031b2b03e10b9c19a45116a01693d83302\"")
-      buildConfigField("String", "SVR2_MRENCLAVE", "\"0ff2d7d4efbe7cfc24ac069a16fba898928dbe6c40d500c8b6da55733c727d6e\"")
-      buildConfigField("String[]", "UNIDENTIFIED_SENDER_TRUST_ROOTS", "new String[]{\"BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx\", \"BYhU6tPjqP46KGZEzRs1OL4U39V5dlPJ/X09ha4rErkm\"}")
-      buildConfigField("String", "ZKGROUP_SERVER_PUBLIC_PARAMS", "\"ABSY21VckQcbSXVNCGRYJcfWHiAMZmpTtTELcDmxgdFbtp/bWsSxZdMKzfCp8rvIs8ocCU3B37fT3r4Mi5qAemeGeR2X+/YmOGR5ofui7tD5mDQfstAI9i+4WpMtIe8KC3wU5w3Inq3uNWVmoGtpKndsNfwJrCg0Hd9zmObhypUnSkfYn2ooMOOnBpfdanRtrvetZUayDMSC5iSRcXKpdlukrpzzsCIvEwjwQlJYVPOQPj4V0F4UXXBdHSLK05uoPBCQG8G9rYIGedYsClJXnbrgGYG3eMTG5hnx4X4ntARBgELuMWWUEEfSK0mjXg+/2lPmWcTZWR9nkqgQQP0tbzuiPm74H2wMO4u1Wafe+UwyIlIT9L7KLS19Aw8r4sPrXZSSsOZ6s7M1+rTJN0bI5CKY2PX29y5Ok3jSWufIKcgKOnWoP67d5b2du2ZVJjpjfibNIHbT/cegy/sBLoFwtHogVYUewANUAXIaMPyCLRArsKhfJ5wBtTminG/PAvuBdJ70Z/bXVPf8TVsR292zQ65xwvWTejROW6AZX6aqucUjlENAErBme1YHmOSpU6tr6doJ66dPzVAWIanmO/5mgjNEDeK7DDqQdB1xd03HT2Qs2TxY3kCK8aAb/0iM0HQiXjxZ9HIgYhbtvGEnDKW5ILSUydqH/KBhW4Pb0jZWnqN/YgbWDKeJxnDbYcUob5ZY5Lt5ZCMKuaGUvCJRrCtuugSMaqjowCGRempsDdJEt+cMaalhZ6gczklJB/IbdwENW9KeVFPoFNFzhxWUIS5ML9riVYhAtE6JE5jX0xiHNVIIPthb458cfA8daR0nYfYAUKogQArm0iBezOO+mPk5vCNWI+wwkyFCqNDXz/qxl1gAntuCJtSfq9OC3NkdhQlgYQ==\"")
-      buildConfigField("String", "GENERIC_SERVER_PUBLIC_PARAMS", "\"AYhaw+NbxtNLo/RlGFEsHd904hW38LpPJ59jYJlNmT4wwtyOq4xzCs/MyXsfRbIsAYhQjDnpE0rhFtWkMcn/kV740SISwFfpPHunrtZ9h0YWz5QNNbI5I3DRGUjhKXgMU7J7s7qOr0fdms+g0e+L9FMSjJLobDkOngp/m0B5TsxTyqLscJ5VyU69Cj8txImTfHMCKrYphYfRHO78RwPoz2g2tGUAzEbKHm12OgDna2qutkE5TvYqwZczvgZyLVHdHXpvdyOlEdv4afVyWkI7u/S0XYDonIJoHlxqJoTSepZR\"")
-      buildConfigField("String", "BACKUP_SERVER_PUBLIC_PARAMS", "\"AXYrGb9IfugAAJiPKp+mdXUx+OL9zBolPYHYQz6GI1gWjpEu5me3zVNSvmYY4zWboZHif+HG1sDHSuvwFd0QszS6h3nZ6vRdM/IYGK+cLynw3ucWo7idf3zjOG3b6JnGT/z7XYCr6HuOGkWH4DQWCH98hxVZMGOgmT8DCQoqebQb3oK1yrwEglRWmtI01KhRg9RGUKoQiwuej1JZEY8uaG4Uz9n1cVODJ1iuByhNqGHo+KfI4iWhjtx2AnhYqHViQ3CMd4ASGBJtic9UTFVk/4vegVIy0wfYsAmViftzK6t4\"")
+      // SWARM: upstream sets Signal's staging hosts, keys and trust roots here. SWARM runs one server, so
+      // staging inherits the SWARM values from defaultConfig.
+
       buildConfigField("String", "MOBILE_COIN_ENVIRONMENT", "\"testnet\"")
-      buildConfigField("String", "SIGNAL_CAPTCHA_URL", "\"https://signalcaptchas.org/staging/registration/generate.html\"")
-      buildConfigField("String", "RECAPTCHA_PROOF_URL", "\"https://signalcaptchas.org/staging/challenge/generate.html\"")
-      buildConfigField("org.signal.libsignal.net.Network.Environment", "LIBSIGNAL_NET_ENV", "org.signal.libsignal.net.Network.Environment.STAGING")
       buildConfigField("int", "LIBSIGNAL_LOG_LEVEL", "org.signal.libsignal.protocol.logging.SignalProtocolLogger.DEBUG")
 
       buildConfigField("String", "BUILD_ENVIRONMENT_TYPE", "\"Staging\"")
-      buildConfigField("String", "STRIPE_PUBLISHABLE_KEY", "\"pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD\"")
     }
   }
 
@@ -937,7 +931,7 @@ fun getMapsKey(): String {
   return providers
     .gradleProperty("mapsKey")
     .orElse(providers.environmentVariable("MAPS_KEY"))
-    .orElse("AIzaSyCSx9xea86GwDKGznCAULE9Y5a8b-TfN9U")
+    .orElse("") // SWARM: no default key (upstream's is Signal's)
     .get()
 }
 

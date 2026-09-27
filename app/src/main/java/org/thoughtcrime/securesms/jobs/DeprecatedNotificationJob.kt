@@ -51,7 +51,7 @@ class DeprecatedNotificationJob private constructor(parameters: Parameters) : Jo
 
       if (BuildConfig.MANAGES_APP_UPDATES) {
         Log.d(TAG, "Showing deprecated notification for website APK")
-        intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://signal.org/android/apk"))
+        intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://swarm.green"))
       } else {
         Log.d(TAG, "Showing deprecated notification for PlayStore")
         val packageName = context.packageName

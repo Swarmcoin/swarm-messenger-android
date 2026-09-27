@@ -598,7 +598,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val url = "https://support.signal.org/hc/en-us/articles/360007320551"
+    val url = "https://swarm.green/support"
     CollectActions(viewModel.actions) { action ->
       when (action) {
         LinkAccountScreenAction.OpenGetHelpArticle -> openUrl(context, url)
@@ -622,7 +622,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     }
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val url = "https://support.signal.org/hc/articles/360007320391"
+    val url = "https://swarm.green/support"
     CollectActions(viewModel.actions) { action ->
       when (action) {
         MessageSyncScreenAction.OpenLearnMoreArticle -> openUrl(context, url)
@@ -741,9 +741,9 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     val purchaseScope = rememberCoroutineScope()
     CollectActions(viewModel.actions) { action ->
       when (action) {
-        SignalLoginPaymentScreenActions.OpenLearnMoreArticle -> openUrl(context, "https://support.signal.org/hc/articles/11197884108826")
+        SignalLoginPaymentScreenActions.OpenLearnMoreArticle -> openUrl(context, "https://swarm.green/support")
 
-        SignalLoginPaymentScreenActions.OpenPaymentUnavailableArticle -> openUrl(context, "https://support.signal.org/hc/articles/11228705649690")
+        SignalLoginPaymentScreenActions.OpenPaymentUnavailableArticle -> openUrl(context, "https://swarm.green/support")
 
         is SignalLoginPaymentScreenActions.LaunchPurchaseFlow -> {
           purchaseScope.launch {
@@ -923,7 +923,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     val context = LocalContext.current
     CollectActions(viewModel.actions) { action ->
       when (action) {
-        SignalLoginCredentialEntryScreenActions.OpenNeedHelpArticle -> openUrl(context, "https://support.signal.org/hc/articles/11197884108826")
+        SignalLoginCredentialEntryScreenActions.OpenNeedHelpArticle -> openUrl(context, "https://swarm.green/support")
       }
     }
 
@@ -987,7 +987,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     val context = LocalContext.current
     CollectActions(viewModel.actions) { action ->
       when (action) {
-        AddUsernameScreenActions.OpenLearnMoreArticle -> openUrl(context, "https://support.signal.org/hc/articles/6712070553754")
+        AddUsernameScreenActions.OpenLearnMoreArticle -> openUrl(context, "https://swarm.green/support")
       }
     }
 
@@ -1027,7 +1027,7 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     val context = LocalContext.current
     CollectActions(viewModel.actions) { action ->
       when (action) {
-        PinCreationScreenActions.OpenLearnMoreArticle -> openUrl(context, "https://support.signal.org/hc/articles/360007059792")
+        PinCreationScreenActions.OpenLearnMoreArticle -> openUrl(context, "https://swarm.green/support")
       }
     }
 

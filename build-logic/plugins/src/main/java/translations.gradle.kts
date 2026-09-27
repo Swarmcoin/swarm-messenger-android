@@ -526,15 +526,15 @@ tasks.register("resolveStaticIps") {
   doLast {
     val staticIpResolver = StaticIpResolver()
     val content = """
-      service_ips=${staticIpResolver.resolveToBuildConfig("chat.signal.org")}
-      storage_ips=${staticIpResolver.resolveToBuildConfig("storage.signal.org")}
-      cdn_ips=${staticIpResolver.resolveToBuildConfig("cdn.signal.org")}
-      cdn2_ips=${staticIpResolver.resolveToBuildConfig("cdn2.signal.org")}
-      cdn3_ips=${staticIpResolver.resolveToBuildConfig("cdn3.signal.org")}
-      sfu_ips=${staticIpResolver.resolveToBuildConfig("sfu.voip.signal.org")}
-      content_proxy_ips=${staticIpResolver.resolveToBuildConfig("contentproxy.signal.org")}
-      svr2_ips=${staticIpResolver.resolveToBuildConfig("svr2.signal.org")}
-      cdsi_ips=${staticIpResolver.resolveToBuildConfig("cdsi.signal.org")}
+      service_ips=${staticIpResolver.resolveToBuildConfig("chat.swarm.green")}
+      storage_ips=${staticIpResolver.resolveToBuildConfig("chat.swarm.green")}
+      cdn_ips=${staticIpResolver.resolveToBuildConfig("cdn.chat.swarm.green")}
+      cdn2_ips=${staticIpResolver.resolveToBuildConfig("cdn.chat.swarm.green")}
+      cdn3_ips=${staticIpResolver.resolveToBuildConfig("cdn.chat.swarm.green")}
+      sfu_ips=${staticIpResolver.resolveToBuildConfig("sfu.chat.swarm.green")}
+      content_proxy_ips=${staticIpResolver.resolveToBuildConfig("contentproxy.chat.swarm.green")}
+      svr2_ips=new String[]{}
+      cdsi_ips=new String[]{}
     """.trimIndent() + "\n"
     File(projectDirFile, "static-ips.properties").writeText(content)
   }

@@ -114,6 +114,7 @@ import org.thoughtcrime.securesms.service.UnreadReminderManager;
 import org.thoughtcrime.securesms.service.webrtc.SignalCallManager;
 import org.thoughtcrime.securesms.shakereport.ShakeToReport;
 import org.thoughtcrime.securesms.stories.Stories;
+import org.thoughtcrime.securesms.swarm.SwarmNetwork;
 import org.thoughtcrime.securesms.util.AdaptiveSleepTimer;
 import org.thoughtcrime.securesms.util.EarlyMessageCache;
 import org.thoughtcrime.securesms.util.Environment;
@@ -349,6 +350,7 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
   public @NonNull Network provideLibsignalNetwork(@NonNull SignalServiceConfiguration config) {
     Network network = new Network(BuildConfig.LIBSIGNAL_NET_ENV, StandardUserAgentInterceptor.USER_AGENT, RemoteConfig.getLibsignalConfigs(), Network.BuildVariant.PRODUCTION);
     LibSignalNetworkExtensions.applyConfiguration(network, config);
+    SwarmNetwork.guard(network); // SWARM: never let libsignal-net reach Signal (see SwarmNetwork)
 
     return network;
   }
@@ -412,6 +414,11 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
         throw new WebSocketUnavailableException("Invalid auth credentials");
       }
 
+      // SWARM: without libsignal's SWARM environment the chat websocket goes to SIGNAL_URL over OkHttp.
+      if (!SwarmNetwork.getLibsignalHasSwarmEnvironment()) {
+        return SwarmNetwork.chatConnection("okhttp-auth", signalServiceConfigurationSupplier.get(), credentialsProvider, healthMonitor, Stories.isFeatureEnabled());
+      }
+
       Network network = libSignalNetworkSupplier.get();
       return new LibSignalChatConnection("libsignal-auth",
                                          network,
@@ -439,6 +446,11 @@ public class ApplicationDependencyProvider implements AppDependencies.Provider {
     SignalWebSocketHealthMonitor healthMonitor = new SignalWebSocketHealthMonitor(sleepTimer, false);
 
     WebSocketFactory unauthFactory = () -> {
+      // SWARM: without libsignal's SWARM environment the chat websocket goes to SIGNAL_URL over OkHttp.
+      if (!SwarmNetwork.getLibsignalHasSwarmEnvironment()) {
+        return SwarmNetwork.chatConnection("okhttp-unauth", signalServiceConfigurationSupplier.get(), null, healthMonitor, Stories.isFeatureEnabled());
+      }
+
       Network network = libSignalNetworkSupplier.get();
       return new LibSignalChatConnection("libsignal-unauth",
                                          network,

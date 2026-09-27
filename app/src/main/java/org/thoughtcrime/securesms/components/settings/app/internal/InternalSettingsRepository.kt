@@ -49,7 +49,7 @@ class InternalSettingsRepository(context: Context) {
 
       val title = "Release Note Title"
       val bodyText = "Release note body. Aren't I awesome?"
-      val linkUrl = "https://signal.org"
+      val linkUrl = "https://swarm.green"
       val body = "$title\n\n$bodyText\n\n$linkUrl"
       val linkStart = body.length - linkUrl.length
       val bodyRangeList = BodyRangeList.Builder()

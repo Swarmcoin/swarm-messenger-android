@@ -12,7 +12,7 @@ on:
   push:
     branches:
       - swarm-main
-      - ci-scratch
+      - swarm-next
   pull_request:
   workflow_dispatch:
 
@@ -26,7 +26,7 @@ concurrency:
 env:
   VARIANT: websiteProdDebug
   # report: print what the scan finds and pass. enforce: fail the build on any finding.
-  SWARM_SCAN_MODE: report
+  SWARM_SCAN_MODE: enforce
 
 jobs:
   apk:
@@ -56,7 +56,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
         with:
-          cache-read-only: ${{ github.ref != 'refs/heads/swarm-main' && github.ref != 'refs/heads/ci-scratch' }}
+          cache-read-only: ${{ github.ref != 'refs/heads/swarm-main' && github.ref != 'refs/heads/swarm-next' }}
 
       - name: Fit Gradle into a 16 GB runner
         # gradle.properties asks for a 12 GB Gradle heap and a 4 GB Kotlin daemon. The app module's Kotlin

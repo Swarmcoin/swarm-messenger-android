@@ -50,7 +50,7 @@ class RestoreLocalBackupFragment : ComposeFragment() {
 
   companion object {
     private val TAG = Log.tag(RestoreLocalBackupFragment::class)
-    private const val LEARN_MORE_URL = "https://support.signal.org/hc/articles/360007059752"
+    private const val LEARN_MORE_URL = "https://swarm.green/support"
   }
 
   private val sharedViewModel by activityViewModels<RegistrationViewModel>()

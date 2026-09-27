@@ -1,6 +1,7 @@
 package org.thoughtcrime.securesms.s3
 
 import android.content.Context
+import org.thoughtcrime.securesms.BuildConfig
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
 import okhttp3.Request
@@ -240,7 +241,7 @@ object S3 {
   @VisibleForTesting
   fun s3Url(path: String): URL {
     try {
-      return URI("https", "updates2.signal.org", path, null).toURL()
+      return URI("https", BuildConfig.SWARM_STATIC_HOST, path, null).toURL() // SWARM: never updates2.signal.org
     } catch (e: URISyntaxException) {
       throw IOException(e)
     }

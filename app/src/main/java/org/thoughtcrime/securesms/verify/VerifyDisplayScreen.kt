@@ -108,7 +108,7 @@ fun VerifyDisplayScreen(
                 )
               )
             ) {
-              CommunicationActions.openBrowserLink(context, "https://signal.org/redirect/safety-numbers")
+              CommunicationActions.openBrowserLink(context, "https://swarm.green/support")
             }
           ) {
             append(stringResource(R.string.LearnMoreTextView_learn_more))

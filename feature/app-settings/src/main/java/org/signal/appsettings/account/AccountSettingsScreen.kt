@@ -138,7 +138,7 @@ fun AccountSettingsScreen(
         item {
           SectionFooter(
             text = stringResource(R.string.AccountSettingsFragment__your_signal_login_is_used_to_recover),
-            url = "https://support.signal.org/hc/articles/11197884108826",
+            url = "https://swarm.green/support",
             onEvent = onEvent,
             modifier = Modifier.testTag(AccountSettingsTestTags.LINK_SIGNAL_LOGIN_LEARN_MORE)
           )
@@ -196,7 +196,7 @@ fun AccountSettingsScreen(
         item {
           SectionFooter(
             text = stringResource(R.string.AccountSettingsFragment__use_a_second_form_of_authentication),
-            url = "https://support.signal.org/hc/articles/11228705649690",
+            url = "https://swarm.green/support",
             onEvent = onEvent,
             modifier = Modifier.testTag(AccountSettingsTestTags.LINK_TWO_FACTOR_LEARN_MORE)
           )
@@ -645,7 +645,7 @@ private fun MaxTotpAppsReachedDialog(
     onConfirm = {},
     onDismiss = { onEvent(AccountSettingsEvent.DialogDismissed) },
     dismiss = stringResource(R.string.AccountSettingsFragment__learn_more),
-    onDeny = { onEvent(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690")) },
+    onDeny = { onEvent(AccountSettingsEvent.LearnMoreClicked("https://swarm.green/support")) },
     onDismissRequest = { onEvent(AccountSettingsEvent.DialogDismissed) },
     modifier = Modifier.testTag(AccountSettingsTestTags.DIALOG_MAX_TOTP_APPS_REACHED)
   )
@@ -664,7 +664,7 @@ private fun MaxMfaKeysReachedDialog(
     onConfirm = {},
     onDismiss = { onEvent(AccountSettingsEvent.DialogDismissed) },
     dismiss = stringResource(R.string.AccountSettingsFragment__learn_more),
-    onDeny = { onEvent(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690")) },
+    onDeny = { onEvent(AccountSettingsEvent.LearnMoreClicked("https://swarm.green/support")) },
     onDismissRequest = { onEvent(AccountSettingsEvent.DialogDismissed) },
     modifier = Modifier.testTag(AccountSettingsTestTags.DIALOG_MAX_MFA_KEYS_REACHED)
   )

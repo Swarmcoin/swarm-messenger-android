@@ -38,7 +38,7 @@ import org.thoughtcrime.securesms.util.views.CircularProgressMaterialButton;
 public class UsernameEditFragment extends LoggingFragment {
 
   private static final float  DISABLED_ALPHA           = 0.5f;
-  private static final String USERNAME_SUPPORT_URL     = "https://support.signal.org/hc/articles/6712070553754";
+  private static final String USERNAME_SUPPORT_URL     = "https://swarm.green/support";
   public static final  String IGNORE_TEXT_CHANGE_EVENT = "ignore.text.change.event";
 
   public static final int REQUEST_CODE = 4242;
