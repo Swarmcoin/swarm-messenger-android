@@ -183,3 +183,60 @@ The endpoint scan reports them as occurrences in compiled code.
   counts host names in compiled code by whole name (upstream's `org.signal.messages` package no longer
   counts as `signal.me`).
 - `S3Test_getS3Url` expects `static.swarm.green`.
+
+---
+
+## 4. Trust store: Let's Encrypt's roots instead of Signal's CA
+
+The app pins its own trust store for the chat, CDN and storage hosts: `app/src/main/res/raw/whisper.store`,
+a BouncyCastle `BKS` keystore with password `whisper`, read by `push/SignalServiceTrustStore.java` and turned
+into trust managers by `BlacklistingTrustManager`. Upstream's store holds one certificate, Signal's private
+CA (`CN=Signal Messenger`, SHA-256 `DD:B0:F9:2B:B9:5C:8D:6F:D2:02:EA:6E:8C:C5:CC:D1:82:B5:44:F8:CD:69:6F:47:D5:80:65:9D:DC:9D:F6:5A`),
+so a Let's Encrypt certificate such as `chat.swarm.green`'s could never validate.
+
+SWARM's store holds exactly the two ISRG roots. **Status: implemented; tested by `SwarmTrustStoreTest`.**
+
+| Alias | Certificate | SHA-256 fingerprint | Valid until |
+| --- | --- | --- | --- |
+| `isrg-root-x1` | `C=US, O=Internet Security Research Group, CN=ISRG Root X1` (RSA 4096) | `96:BC:EC:06:26:49:76:F3:74:60:77:9A:CF:28:C5:A7:CF:E8:A3:C0:AA:E1:1A:8F:FC:EE:05:C0:BD:DF:08:C6` | 2035-06-04 |
+| `isrg-root-x2` | `C=US, O=Internet Security Research Group, CN=ISRG Root X2` (ECDSA P-384) | `69:72:9B:8E:15:A8:6E:FC:17:7A:57:AF:B7:17:1D:FC:64:AD:D2:8C:2F:CA:8C:F1:50:7E:34:45:3C:CB:14:70` | 2040-09-17 |
+
+The store file: 2,063 bytes, BKS version 2 (the format upstream's store also uses, which Android reads),
+SHA-256 `5928dd3854610310b662fdc93d39b0fdf97dbc1f3ad3f3555516bb332685a07e`.
+
+### How it was made (2026-09-27, Windows workstation, Temurin JDK 26.0.2 keytool, OpenSSL 3.2.3)
+
+The two roots were taken from the JDK's own `cacerts` rather than downloaded, and their fingerprints
+checked against the values Let's Encrypt publishes (above):
+
+```sh
+keytool -exportcert -rfc -cacerts -storepass changeit \
+  -alias "cn_isrg_root_x1,o_internet_security_research_group,c_us [jdk]" -file isrg-root-x1.pem
+keytool -exportcert -rfc -cacerts -storepass changeit \
+  -alias "cn_isrg_root_x2,o_internet_security_research_group,c_us [jdk]" -file isrg-root-x2.pem
+openssl x509 -in isrg-root-x1.pem -noout -subject -fingerprint -sha256
+openssl x509 -in isrg-root-x2.pem -noout -subject -fingerprint -sha256
+
+BC=bcprov-jdk18on-1.84.jar   # org.bouncycastle:bcprov-jdk18on:1.84 from Maven Central
+for a in x1 x2; do
+  keytool -importcert -noprompt -storetype BKS \
+    -providerclass org.bouncycastle.jce.provider.BouncyCastleProvider -providerpath "$BC" \
+    -keystore whisper.store -storepass whisper -alias isrg-root-$a -file isrg-root-$a.pem
+done
+keytool -list -storetype BKS -providerclass org.bouncycastle.jce.provider.BouncyCastleProvider \
+  -providerpath "$BC" -keystore whisper.store -storepass whisper
+```
+
+### What chat.swarm.green serves, and why both roots
+
+On 2026-09-27 `chat.swarm.green` and `cdn.chat.swarm.green` served Let's Encrypt's new hierarchy with its
+cross-signatures: leaf → `YE2` → `ISRG Root YE` (signed by ISRG Root X2) → `ISRG Root X2` (signed by
+ISRG Root X1). With the cross-signatures in the handshake, either root completes the path:
+`openssl verify` succeeds with X1 alone, with X2 alone and with both. The recorded chain is kept as
+`app/src/test/resources/swarm/chat-swarm-green-chain-2026-09-27.pem` and `SwarmTrustStoreTest` validates it
+(PKIX, at a fixed date inside the leaf's validity) along both paths, checks that the store holds exactly
+the two roots and not Signal's CA, and that it is a version-2 BKS file.
+
+**Proposed:** when Let's Encrypt stops sending the cross-signed certificates, only chains to
+`ISRG Root YE` / `ISRG Root YR` will be served; add those two roots then (same commands, from the JDK's
+`cacerts` once it carries them). Until then X1 and X2 are what the brief asked for and what validates.
