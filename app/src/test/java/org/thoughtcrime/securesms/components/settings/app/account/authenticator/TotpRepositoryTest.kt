@@ -74,18 +74,18 @@ class TotpRepositoryTest {
   fun `beginSetup returns a link and a key in both the forms the screen needs`() = runTest {
     val result = repository.beginSetup(ACCOUNT_NAME) as BeginSetupResult.Success
 
-    assertThat(result.setupUri).startsWith("otpauth://totp/Signal:$ACCOUNT_NAME?")
+    assertThat(result.setupUri).startsWith("otpauth://totp/SWARM%20Messenger:$ACCOUNT_NAME?")
     assertThat(result.setupUri).contains("secret=${result.clipboardKey}")
     assertThat(result.displayKey).isEqualTo(result.clipboardKey.chunked(4).joinToString(" "))
   }
 
-  /** The issuer and the account name have to differ, or an app that shows both renders "Signal: Signal". */
+  /** The issuer and the account name have to differ, or an app that shows both renders "SWARM Messenger: SWARM Messenger" (SWARM: the issuer is "SWARM Messenger"). */
   @Test
   fun `beginSetup names the entry after the account, under the issuer`() = runTest {
     val result = repository.beginSetup(ACCOUNT_NAME) as BeginSetupResult.Success
 
-    assertThat(result.setupUri).startsWith("otpauth://totp/Signal:$ACCOUNT_NAME?")
-    assertThat(result.setupUri).contains("issuer=Signal&")
+    assertThat(result.setupUri).startsWith("otpauth://totp/SWARM%20Messenger:$ACCOUNT_NAME?")
+    assertThat(result.setupUri).contains("issuer=SWARM%20Messenger&")
   }
 
   /** Nothing should reach this without an ACI, but a bare issuer beats a label ending in a colon if anything does. */
@@ -93,14 +93,14 @@ class TotpRepositoryTest {
   fun `beginSetup falls back to the issuer alone when there's no account name`() = runTest {
     val result = repository.beginSetup("") as BeginSetupResult.Success
 
-    assertThat(result.setupUri).startsWith("otpauth://totp/Signal?")
+    assertThat(result.setupUri).startsWith("otpauth://totp/SWARM%20Messenger?")
   }
 
   @Test
   fun `beginSetup treats an account name of nothing but whitespace as no account name`() = runTest {
     val result = repository.beginSetup("   ") as BeginSetupResult.Success
 
-    assertThat(result.setupUri).startsWith("otpauth://totp/Signal?")
+    assertThat(result.setupUri).startsWith("otpauth://totp/SWARM%20Messenger?")
   }
 
   /** A space has to become %20 rather than the + form encoding would produce, or apps render it literally. */
@@ -108,7 +108,7 @@ class TotpRepositoryTest {
   fun `beginSetup percent-encodes the account name`() = runTest {
     val result = repository.beginSetup("+1 555") as BeginSetupResult.Success
 
-    assertThat(result.setupUri).startsWith("otpauth://totp/Signal:%2B1%20555?")
+    assertThat(result.setupUri).startsWith("otpauth://totp/SWARM%20Messenger:%2B1%20555?")
   }
 
   @Test

@@ -58,9 +58,29 @@ class SupportArticleTest {
     return item.attributes.getNamedItem("name").textContent
   }
 
+  /** SWARM: no string may still send a person to Signal's support site. */
+  @Test
+  fun no_string_links_to_signals_support_site() {
+    val strings = DocumentBuilderFactory.newInstance()
+      .newDocumentBuilder()
+      .parse(MAIN_STRINGS_PATH.inputStream())
+      .getElementsByTagName("string")
+
+    val offenders = (0 until strings.length)
+      .map { strings.item(it) }
+      .filter { SIGNAL_SUPPORT.matches(it.textContent) }
+      .map { stringName(it) }
+
+    assertThat(offenders).isEmpty()
+  }
+
   companion object {
     private val MAIN_STRINGS_PATH = Path("src/main/res/values/strings.xml")
-    private val SUPPORT_ARTICLE = Regex(".*://support.signal.org/.*articles/.*")
-    private val CORRECT_SUPPORT_ARTICLE = Regex("https://support.signal.org/hc/articles/\\d+(#[a-z_]+)?")
+
+    // SWARM: support links go to SWARM's support page. Signal's support articles have no SWARM
+    // counterparts yet, so every one of them points at the page itself rather than at an article number.
+    private val SUPPORT_ARTICLE = Regex(".*://swarm.green/support.*")
+    private val CORRECT_SUPPORT_ARTICLE = Regex("https://swarm.green/support")
+    private val SIGNAL_SUPPORT = Regex(".*support\\.signal\\.org.*", RegexOption.DOT_MATCHES_ALL)
   }
 }

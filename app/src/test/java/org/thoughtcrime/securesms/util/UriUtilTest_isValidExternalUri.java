@@ -28,7 +28,7 @@ public class UriUtilTest_isValidExternalUri {
   private final String  input;
   private final boolean output;
 
-  private static final String APPLICATION_ID = "org.thoughtcrime.securesms";
+  private static final String APPLICATION_ID = org.thoughtcrime.securesms.BuildConfig.APPLICATION_ID; // SWARM: green.swarm.messenger
 
   @ParameterizedRobolectricTestRunner.Parameters
   public static Collection<Object[]> data() {
