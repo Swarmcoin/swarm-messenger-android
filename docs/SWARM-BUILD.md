@@ -32,15 +32,27 @@ list is a one-line change in `app/build.gradle.kts`.
 ## Build it in CI (the normal way)
 
 `.github/workflows/swarm-build.yml` runs on GitHub-hosted `ubuntu-latest` for every push to
-`swarm-main`, every pull request and on manual dispatch. Jobs:
+`swarm-main` and `swarm-next`, every pull request and on manual dispatch. Jobs:
 
 | Job          | What it does                                                                                                   |
 | ------------ | -------------------------------------------------------------------------------------------------------------- |
-| `apk`        | `assembleWebsiteProdDebug`, then the SWARM endpoint scan over the shipped configuration, then SHA-256 sums     |
-| `unit-tests` | the unit tests listed in the workflow (the app's own suite for the same variant plus the SWARM tests)          |
-| `release`    | pushes to `swarm-main` only: a GitHub **pre-release** tagged `swarm-messenger-android-<yyyymmdd>-<shortsha>` with the APKs and `SHA256SUMS.txt` |
+| `apk`        | `assembleWebsiteProdDebug`, the SWARM endpoint scan over the shipped configuration (enforce mode), a check that `BuildConfig` names `https://chat.swarm.green` and libsignal's SWARM environment, then SHA-256 sums |
+| `unit-tests` | the app's own unit tests for the same variant, `:feature:registration`, `:lib:libsignal-service`, `:lib:network` (the SWARM tests are among them) |
+| `release`    | pushes to `swarm-main` only: refuses to go on unless the scan ran in enforce mode with no failure and the build is a SWARM build, then publishes a GitHub **pre-release** tagged `swarm-messenger-android-<yyyymmdd>-<shortsha>` with the APKs, `SHA256SUMS.txt`, the scan output and the `BuildConfig` endpoint lines |
 
-Pull request runs build and test but publish nothing.
+A change goes to `swarm-next` first; `swarm-main` fast-forwards to it once that commit is green. Pull
+request runs build and test but publish nothing.
+
+`.github/workflows/swarm-emulator-smoke.yml` is the end-to-end proof: it builds the same APK, boots an
+API 34 x86_64 emulator on a hosted runner (KVM), and `scripts/swarm/emulator_smoke.py` creates a
+**disposable** SWARM wallet account on `chat.swarm.green` through the real screens, names the profile and
+waits for the conversation list. Screenshots, UI dumps and the app's log lines are the run's artifact. It
+creates a real account on the staging server, so it runs only on a push to `swarm-smoke` or by hand.
+
+libsignal is the SWARM build (`org.signal:libsignal-android` `0.102.2-swarm.1` from
+`https://raw.githubusercontent.com/Swarm-Official/swarm-libsignal/maven/`, pinned in
+`gradle/verification-metadata.xml`); Gradle fetches it like any other dependency. Signal's own artifact
+host is still used for the other `org.signal` libraries (ringrtc, sqlcipher), at build time only.
 
 The APKs are signed with the runner's throwaway debug key, so **two releases are signed by different
 keys**: Android refuses to update one with the other, and the old one has to be uninstalled first.
