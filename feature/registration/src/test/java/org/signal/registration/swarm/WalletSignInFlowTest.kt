@@ -234,8 +234,9 @@ class WalletSignInFlowTest {
 
     viewModel.handle(WalletSignInEvents.BackToChoice)
     viewModel.handle(WalletSignInEvents.CreateNewWallet)
-    val firstWord = viewModel.state.value.generatedWords.first()
-    assertThat(viewModel.state.value.toString().contains(" $firstWord")).isFalse()
+    val words = viewModel.state.value.generatedWords
+    assertThat(viewModel.state.value.toString().contains(words.take(3).joinToString(" "))).isFalse()
+    assertThat(viewModel.state.value.toString().contains(words.take(3).joinToString(", "))).isFalse()
   }
 
   private fun assertRegistrationCompleted(expectedIdentifier: String) {
