@@ -84,6 +84,7 @@ val selectableVariants = listOf(
   "playStagingRelease",
   "playProdQuickstart",
   "playStagingQuickstart",
+  "websiteProdDebug", // SWARM addition: the variant SWARM Messenger ships (see docs/SWARM-BUILD.md)
   "websiteProdSpinner",
   "websiteProdRelease",
   "githubProdSpinner",
