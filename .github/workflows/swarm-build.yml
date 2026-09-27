@@ -59,14 +59,15 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/swarm-main' && github.ref != 'refs/heads/ci-scratch' }}
 
       - name: Fit Gradle into a 16 GB runner
-        # gradle.properties asks for a 12 GB heap; with the Kotlin daemon beside it that does not fit.
-        # A Gradle user-home gradle.properties overrides the project's.
+        # gradle.properties asks for a 12 GB Gradle heap and a 4 GB Kotlin daemon. The app module's Kotlin
+        # compile needs more than 3 GB (run 36344336536 died with "GC overhead limit exceeded"), and two
+        # parallel workers is what 16 GB holds. A Gradle user-home gradle.properties overrides the project's.
         run: |
           mkdir -p ~/.gradle
           cat >> ~/.gradle/gradle.properties <<'EOF'
-          org.gradle.jvmargs=-Xmx7g -Xms256m -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC
-          kotlin.daemon.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=512m
-          org.gradle.workers.max=4
+          org.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC
+          kotlin.daemon.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC
+          org.gradle.workers.max=2
           EOF
 
       - name: Build the APK
@@ -128,9 +129,9 @@ jobs:
         run: |
           mkdir -p ~/.gradle
           cat >> ~/.gradle/gradle.properties <<'EOF'
-          org.gradle.jvmargs=-Xmx6g -Xms256m -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC
-          kotlin.daemon.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=512m
-          org.gradle.workers.max=4
+          org.gradle.jvmargs=-Xmx4g -Xms256m -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC
+          kotlin.daemon.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC
+          org.gradle.workers.max=2
           EOF
 
       - name: Run the unit tests
