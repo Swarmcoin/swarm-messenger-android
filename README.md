@@ -1,3 +1,19 @@
+# SWARM Messenger for Android
+
+This repository is **SWARM Messenger for Android**, a fork of
+[Signal-Android](https://github.com/signalapp/Signal-Android) by Signal Messenger, LLC, licensed
+under the GNU AGPLv3 like the original. It talks only to SWARM's own servers (`chat.swarm.green`), and
+an account is a SWARM wallet recovery phrase instead of a phone number.
+
+- What changed from upstream, file by file: [`docs/SWARM-CHANGES.md`](docs/SWARM-CHANGES.md)
+- How to build and test it: [`docs/SWARM-BUILD.md`](docs/SWARM-BUILD.md)
+- Branches: `upstream-main` is upstream untouched; all SWARM work is on `swarm-main`.
+
+SWARM Messenger is not affiliated with or endorsed by Signal Messenger, LLC. Please report problems
+with this fork here, not to Signal. The upstream README follows, unchanged.
+
+---
+
 # Signal Android
 
 Signal is a simple, powerful, and secure messenger that uses your phone's data connection (WiFi/4G/5G) to communicate securely.
