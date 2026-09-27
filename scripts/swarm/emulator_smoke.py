@@ -76,13 +76,16 @@ class Ui:
                 return node
         return None
 
-    def wait_for(self, what, timeout=90, **query):
+    def wait_for(self, what, timeout=90, scroll=False, **query):
+        """Waits for a node. With scroll=True, scrolls the screen up between looks: UI Automator only sees what
+        is on screen, and a long screen (the 24 words) can push a control below the fold on a small display."""
         deadline = time.time() + timeout
         while time.time() < deadline:
             node = self.find(**query)
             if node is not None:
                 return node
-            self.dismiss_system_dialogs()
+            if not self.dismiss_system_dialogs() and scroll:
+                self.swipe_up()
             time.sleep(2)
         self.save_dump(f"timeout-{what}")
         self.screenshot(f"timeout-{what}")
@@ -95,8 +98,17 @@ class Ui:
         adb("shell", "input", "tap", str(x), str(y))
         time.sleep(1.5)
 
-    def tap_when_present(self, what, timeout=90, **query):
-        self.tap(self.wait_for(what, timeout=timeout, **query), what)
+    def tap_when_present(self, what, timeout=90, scroll=False, **query):
+        self.tap(self.wait_for(what, timeout=timeout, scroll=scroll, **query), what)
+
+    def swipe_up(self):
+        size = adb("shell", "wm", "size", check=False).decode(errors="replace")
+        match = re.search(r"(\d+)x(\d+)", size)
+        width, height = (int(match.group(1)), int(match.group(2))) if match else (1080, 2400)
+        x = width // 2
+        log("scroll up")
+        adb("shell", "input", "swipe", str(x), str(height * 7 // 10), str(x), str(height * 3 // 10), "400", check=False)
+        time.sleep(1)
 
     def dismiss_system_dialogs(self):
         """Android's own permission and battery dialogs: decline, SWARM Messenger works without them."""
@@ -158,8 +170,8 @@ def main():
     ui.tap_when_present("Create a new wallet", rid="swarm_wallet_create")
 
     # The 24 words are on screen now (FLAG_SECURE: not captured). Confirm and continue; the phrase is never read.
-    ui.tap_when_present("written-down checkbox", rid="swarm_wallet_written_down")
-    ui.tap_when_present("Continue", rid="swarm_wallet_continue")
+    ui.tap_when_present("written-down checkbox", scroll=True, rid="swarm_wallet_written_down")
+    ui.tap_when_present("Continue", scroll=True, rid="swarm_wallet_continue")
 
     log("waiting for registration and the profile screen")
     deadline = time.time() + 240
