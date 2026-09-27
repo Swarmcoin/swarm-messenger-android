@@ -1,0 +1,104 @@
+# SWARM Messenger for Android: register a disposable account on an emulator, against chat.swarm.green.
+#
+# Builds the same APK as swarm-build.yml (websiteProdDebug), boots an x86_64 emulator on a GitHub-hosted runner
+# (hardware acceleration through KVM), and runs scripts/swarm/emulator_smoke.py: welcome -> "Create a new wallet"
+# -> "I have written these 24 words down" -> the SWARM wallet sign-in (challenge, verify, Signal's own registration)
+# -> profile name -> conversation list. Screenshots, UI dumps and the app's log are kept as the run's artifact.
+#
+# It talks to the real SWARM staging server and creates a real (disposable) account there, so it only runs when
+# someone asks: a push to branch swarm-smoke, or a manual run.
+name: SWARM emulator smoke test
+
+on:
+  push:
+    branches:
+      - swarm-smoke
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swarm-emulator-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    name: Register on an emulator against chat.swarm.green
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/share/swift /opt/ghc /usr/local/.ghcup /usr/local/julia* \
+                      /usr/local/share/powershell /usr/local/share/chromium /opt/microsoft /opt/google /opt/az \
+                      /opt/hostedtoolcache/CodeQL /opt/hostedtoolcache/go /opt/hostedtoolcache/PyPy || true
+          df -h /
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+        with:
+          cache-read-only: true
+
+      - name: Fit Gradle into a 16 GB runner
+        run: |
+          mkdir -p ~/.gradle
+          cat >> ~/.gradle/gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx5g -Xms256m -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC
+          kotlin.daemon.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=1g -XX:+UseParallelGC
+          org.gradle.workers.max=2
+          EOF
+
+      - name: Build the APK
+        run: ./gradlew :Signal-Android:assembleWebsiteProdDebug --stacktrace
+
+      - name: Pick the x86_64 APK and check it is a SWARM build
+        id: apk
+        run: |
+          set -euo pipefail
+          apk=$(ls app/build/outputs/apk/websiteProd/debug/*x86_64*.apk | head -1)
+          config=app/build/generated/source/buildConfig/websiteProd/debug/org/thoughtcrime/securesms/BuildConfig.java
+          grep -q 'String SIGNAL_URL = "https://chat.swarm.green";' "$config"
+          grep -q 'LIBSIGNAL_NET_ENV = org.signal.libsignal.net.Network.Environment.SWARM;' "$config"
+          sha256sum "$apk"
+          echo "apk=$apk" >> "$GITHUB_OUTPUT"
+
+      - name: Stop the Gradle daemons (the emulator needs the memory)
+        run: ./gradlew --stop || true
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run the smoke test on an emulator
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          target: default
+          arch: x86_64
+          profile: pixel_6
+          ram-size: 4096M
+          disk-size: 6000M
+          force-avd-creation: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot
+          disable-animations: true
+          script: python3 scripts/swarm/emulator_smoke.py --apk "${{ steps.apk.outputs.apk }}" --out smoke-out
+
+      - name: Keep the evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: emulator-smoke-${{ github.run_id }}
+          path: smoke-out/
+          retention-days: 30
+          if-no-files-found: warn
