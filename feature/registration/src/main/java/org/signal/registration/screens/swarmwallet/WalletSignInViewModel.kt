@@ -175,20 +175,23 @@ class WalletSignInViewModel(
 
   private fun fail(step: String, result: RequestResult<*, SwarmWalletError>) {
     val error = when (result) {
-      is RequestResult.NonSuccess -> when (result.error) {
-        is SwarmWalletError.RateLimited -> WalletSignInState.SignInError.RATE_LIMITED
-        SwarmWalletError.IdentifierTaken -> WalletSignInState.SignInError.IDENTIFIER_TAKEN
-        SwarmWalletError.SignatureRejected, SwarmWalletError.NoChallengePending, is SwarmWalletError.InvalidRequest -> WalletSignInState.SignInError.REJECTED
+      is RequestResult.NonSuccess -> {
+        Log.w(TAG, "[signIn] The server refused the $step step: ${result.error::class.simpleName}")
+        when (result.error) {
+          is SwarmWalletError.RateLimited -> WalletSignInState.SignInError.RATE_LIMITED
+          is SwarmWalletError.IdentifierTaken -> WalletSignInState.SignInError.IDENTIFIER_TAKEN
+          else -> WalletSignInState.SignInError.REJECTED
+        }
       }
-      is RequestResult.RetryableNetworkError -> WalletSignInState.SignInError.NETWORK
-      is RequestResult.ApplicationError -> WalletSignInState.SignInError.UNKNOWN
-      is RequestResult.Success -> WalletSignInState.SignInError.UNKNOWN
-    }
-    when (result) {
-      is RequestResult.NonSuccess -> Log.w(TAG, "[signIn] The server refused the $step step: ${result.error::class.simpleName}")
-      is RequestResult.RetryableNetworkError -> Log.w(TAG, "[signIn] Network error at the $step step.", result.networkError)
-      is RequestResult.ApplicationError -> Log.w(TAG, "[signIn] The $step step failed.", result.cause)
-      is RequestResult.Success -> Unit
+      is RequestResult.RetryableNetworkError -> {
+        Log.w(TAG, "[signIn] Network error at the $step step.", result.networkError)
+        WalletSignInState.SignInError.NETWORK
+      }
+      is RequestResult.ApplicationError -> {
+        Log.w(TAG, "[signIn] The $step step failed.", result.cause)
+        WalletSignInState.SignInError.UNKNOWN
+      }
+      else -> WalletSignInState.SignInError.UNKNOWN
     }
     _state.value = _state.value.copy(working = false, error = error)
   }
