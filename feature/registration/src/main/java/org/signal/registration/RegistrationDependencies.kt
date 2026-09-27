@@ -23,6 +23,9 @@ import org.signal.registration.util.SensitiveLog
  * @param debugLogCallback Callback to launch the debug log viewer. The actual app provides the real implementation.
  * @param proxyConfigCallback Callback to launch the proxy configuration settings. The actual app provides the real implementation.
  * @param contactSupportController Lets the user contact support, optionally attaching a debug log. The actual app provides the real implementation.
+ * @param isSwarmWalletSignIn SWARM addition: an account is a SWARM wallet, not a phone number. The welcome screen's
+ *   "continue" leads to the wallet screen, and upstream's backup-restore and device-transfer entry points are hidden.
+ *   False keeps upstream's phone-number flow, which is what the module's own tests and demo app exercise.
  */
 class RegistrationDependencies(
   val networkController: NetworkController,
@@ -33,7 +36,8 @@ class RegistrationDependencies(
   val sensitiveLogger: Log.Logger?,
   val debugLogCallback: ((Context) -> Unit)?,
   val proxyConfigCallback: ((Context) -> Unit)?,
-  val contactSupportController: ContactSupportController?
+  val contactSupportController: ContactSupportController?,
+  val isSwarmWalletSignIn: Boolean = false
 ) {
   companion object {
     lateinit var dependencies: RegistrationDependencies

@@ -133,6 +133,8 @@ import org.signal.registration.screens.signallogincredentials.SignalLoginManualS
 import org.signal.registration.screens.signallogindetails.RegistrationSignalLoginDetailsAction
 import org.signal.registration.screens.signallogindetails.RegistrationSignalLoginDetailsViewModel
 import org.signal.registration.screens.signallogininfo.SignalLoginInfoScreen
+import org.signal.registration.screens.swarmwallet.WalletSignInScreen
+import org.signal.registration.screens.swarmwallet.WalletSignInViewModel
 import org.signal.registration.screens.signallogininfo.SignalLoginInfoScreenActions
 import org.signal.registration.screens.signallogininfo.SignalLoginInfoScreenEvents
 import org.signal.registration.screens.signallogininfo.SignalLoginInfoViewModel
@@ -186,6 +188,10 @@ sealed interface RegistrationRoute : NavKey, Parcelable {
 
   @Serializable
   data object PhoneNumberEntry : RegistrationRoute
+
+  /** SWARM addition (wallet sign-in): create or restore a SWARM wallet instead of entering a phone number. */
+  @Serializable
+  data object SwarmWallet : RegistrationRoute
 
   @Serializable
   data class CountryCodePicker(val country: Country? = null) : RegistrationRoute
@@ -630,6 +636,22 @@ private fun EntryProviderScope<NavKey>.navigationEntries(
     }
 
     MessageSyncScreen(
+      state = state,
+      onEvent = { viewModel.onEvent(it) }
+    )
+  }
+
+  // -- SWARM addition (wallet sign-in): the screen that replaces the phone number
+  entry<RegistrationRoute.SwarmWallet> {
+    val viewModel: WalletSignInViewModel = viewModel {
+      WalletSignInViewModel(
+        repository = registrationRepository,
+        parentEventEmitter = registrationViewModel::onEvent
+      )
+    }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    WalletSignInScreen(
       state = state,
       onEvent = { viewModel.onEvent(it) }
     )

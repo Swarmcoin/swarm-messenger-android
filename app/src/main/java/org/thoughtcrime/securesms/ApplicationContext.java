@@ -453,7 +453,8 @@ public class ApplicationContext extends Application implements AppForegroundObse
           context.startActivity(EditProxyActivity.intent(context));
           return Unit.INSTANCE;
         },
-        new AppContactSupportController()
+        new AppContactSupportController(),
+        true // SWARM: sign in with a SWARM wallet, not a phone number
       )
     );
   }

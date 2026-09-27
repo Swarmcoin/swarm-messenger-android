@@ -278,3 +278,23 @@ Signal's servers may ever be offered for download.
   both files.
 - A change reaches `swarm-main` (the only branch that publishes) only after the same commit has been green
   on `swarm-next`.
+
+---
+
+## 7. Wallet sign-in: registration without a telephone number
+
+**Status: implemented; unit-tested** (see [`WALLET-SIGN-IN.md`](WALLET-SIGN-IN.md) for the flow, the protocol,
+what the phrase may touch, and every test). In short:
+
+| File | Change |
+| --- | --- |
+| `feature/registration/.../swarm/Bip39.kt`, `Bip39Wordlist.kt` (new) | BIP-39 as specified: 24 words from 32 bytes of entropy, the checksum, the NFKD-normalized seed (PBKDF2-HMAC-SHA512, 2048 rounds) |
+| `feature/registration/.../swarm/SwarmWalletIdentity.kt` (new) | ACI and PNI identity key pairs from the seed (libsignal's HKDF with the labels `SWARM-Messenger-ACI-identity-v1` / `-PNI-identity-v1`, X25519 clamp, libsignal key types), the `+888` identifier, the challenge message and its XEdDSA signature. The three shared vectors match the server's and the desktop's |
+| `feature/registration/.../screens/swarmwallet/*` (new) | the wallet screen: create (24 words once, "written down" checkbox) or restore; `FLAG_SECURE` while shown |
+| `lib/network/.../api/SwarmWalletApi.kt` (new) | `POST /v1/swarm/registration/challenge` and `/verify` |
+| `NetworkController.kt`, `RegistrationRepository.kt`, `RegistrationDependencies.kt`, `RegistrationNavigation.kt`, `WelcomeScreenViewModel.kt` | the calls, `registerAccountWithSwarmWallet` (upstream's recovery-password registration with the derived keys and the server's single-use password), the `SwarmWallet` route, Continue → wallet, no restore-or-transfer; all behind `isSwarmWalletSignIn`, which only the app turns on, so upstream's phone-number flow and its tests stay as they were |
+| `AppRegistrationNetworkController.kt`, `ApplicationContext.java` | the calls over the app's REST client; wallet sign-in on |
+| `SignalE164Util.kt`, `swarm_strings.xml` | a `+888` identifier is displayed as "SWARM account", never as a number |
+
+No PIN: after registration the flow records the PIN opt-out and a new-account restore decision, exactly as
+upstream does when a person skips the PIN, and completes.

@@ -53,7 +53,10 @@ import org.signal.core.util.crypto.DeviceNameCipher
 import org.signal.core.util.isDebuggableBuild
 import org.signal.core.util.logging.Log
 import org.signal.libsignal.net.RequestResult
+import org.signal.libsignal.protocol.IdentityKey
 import org.signal.libsignal.protocol.IdentityKeyPair
+import org.signal.network.api.SwarmWalletApi
+import org.signal.registration.swarm.SwarmWalletIdentity
 import org.signal.libsignal.protocol.ecc.ECKeyPair
 import org.signal.libsignal.protocol.kem.KEMKeyPair
 import org.signal.libsignal.protocol.kem.KEMKeyType
@@ -120,7 +123,9 @@ class RegistrationRepository(
   val isPhoneNumberlessRegistrationAvailable: Boolean = false,
   private val isGooglePlayBillingAvailable: Boolean = false,
   private val signalLoginPurchaseApi: OneTimePurchaseApi,
-  private val googlePlayServicesStatus: () -> PaymentAvailability = { PaymentAvailability.fromConnectionResult(GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)) }
+  private val googlePlayServicesStatus: () -> PaymentAvailability = { PaymentAvailability.fromConnectionResult(GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context)) },
+  /** SWARM addition: see [RegistrationDependencies.isSwarmWalletSignIn]. */
+  val isSwarmWalletSignIn: Boolean = false
 ) {
 
   /** Gates debug-only affordances, like the manual receipt credential entry field on the Signal Login purchase screen. */
@@ -158,7 +163,8 @@ class RegistrationRepository(
         signalLoginPurchaseApi = BillingFactory.createOneTimePurchaseApi(
           context = application,
           isAvailable = dependencies.isGooglePlayBillingAvailable
-        )
+        ),
+        isSwarmWalletSignIn = dependencies.isSwarmWalletSignIn
       )
     }
 
@@ -387,6 +393,41 @@ class RegistrationRepository(
       existingAciIdentityKeyPair = preExistingRegistrationData?.aciIdentityKeyPair,
       existingPniIdentityKeyPair = preExistingRegistrationData?.pniIdentityKeyPair,
       unrestrictedUnidentifiedAccess = preExistingRegistrationData?.unrestrictedUnidentifiedAccess ?: false
+    )
+  }
+
+  /** SWARM addition (wallet sign-in). See [NetworkController.requestSwarmWalletChallenge]. */
+  suspend fun requestSwarmWalletChallenge(identityKey: IdentityKey): RequestResult<SwarmWalletApi.Challenge, SwarmWalletApi.SwarmWalletError> = withContext(Dispatchers.IO) {
+    networkController.requestSwarmWalletChallenge(identityKey)
+  }
+
+  /** SWARM addition (wallet sign-in). See [NetworkController.verifySwarmWalletChallenge]. */
+  suspend fun verifySwarmWalletChallenge(identityKey: IdentityKey, signature: ByteArray): RequestResult<SwarmWalletApi.Verification, SwarmWalletApi.SwarmWalletError> = withContext(Dispatchers.IO) {
+    networkController.verifySwarmWalletChallenge(identityKey, signature)
+  }
+
+  /**
+   * SWARM addition (wallet sign-in). Registers the account a SWARM wallet derives: Signal's own recovery-password
+   * registration (`POST /v1/registration`, no session, no SMS), with the identity key pairs derived from the wallet's
+   * recovery phrase and the single-use password the chat server issued for this identity after it signed the
+   * challenge. The server refuses the registration unless the ACI identity key in it derives the identifier.
+   */
+  suspend fun registerAccountWithSwarmWallet(
+    identity: SwarmWalletIdentity.Identity,
+    verification: SwarmWalletApi.Verification
+  ): RequestResult<RegisteredAccountData, RegisterAccountError> = withContext(Dispatchers.IO) {
+    if (verification.number != identity.accountIdentifier) {
+      Log.w(TAG, "[registerAccountWithSwarmWallet] The server derived a different account identifier from this identity key.")
+      return@withContext RequestResult.ApplicationError(IllegalStateException("The server and the app derive different account identifiers"))
+    }
+
+    registerAccount(
+      e164 = verification.number,
+      sessionId = null,
+      recoveryPassword = verification.registrationPassword,
+      skipDeviceTransfer = true,
+      existingAciIdentityKeyPair = identity.aciIdentityKeyPair,
+      existingPniIdentityKeyPair = identity.pniIdentityKeyPair
     )
   }
 

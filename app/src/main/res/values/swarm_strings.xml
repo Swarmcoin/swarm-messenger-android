@@ -8,4 +8,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Licence attribution in Settings > Help. Required by the AGPL-3.0; must never be removed or reworded. -->
     <string name="SwarmAbout__based_on_signal">SWARM Messenger is based on Signal by Signal Messenger, LLC</string>
+    <!-- Shown wherever the app would display a phone number for a SWARM account. A SWARM account has no phone
+         number: it is keyed by an identifier derived from its wallet, which is never shown. -->
+    <string name="SwarmAccount__display_instead_of_number">SWARM account</string>
 </resources>

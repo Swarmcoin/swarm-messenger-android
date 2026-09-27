@@ -60,6 +60,7 @@ import org.signal.network.api.RegistrationApiV2.SubmitVerificationCodeError
 import org.signal.network.api.RegistrationApiV2.SvrCredentials
 import org.signal.network.api.RegistrationApiV2.UpdateSessionError
 import org.signal.network.api.RegistrationApiV2.VerificationCodeTransport
+import org.signal.network.api.SwarmWalletApi
 import org.signal.network.service.ArchiveError
 import org.signal.network.service.UsernameService.ConfirmUsernameError
 import org.signal.network.service.UsernameService.ConfirmedUsername
@@ -211,6 +212,17 @@ class AppRegistrationNetworkController(
       aci = aci,
       totp = totp
     )
+  }
+
+  // SWARM addition (wallet sign-in).
+  private val swarmWalletApi: SwarmWalletApi by lazy { SwarmWalletApi(AppDependencies.signalRestClient) }
+
+  override suspend fun requestSwarmWalletChallenge(identityKey: IdentityKey): RequestResult<SwarmWalletApi.Challenge, SwarmWalletApi.SwarmWalletError> {
+    return swarmWalletApi.requestChallenge(identityKey)
+  }
+
+  override suspend fun verifySwarmWalletChallenge(identityKey: IdentityKey, signature: ByteArray): RequestResult<SwarmWalletApi.Verification, SwarmWalletApi.SwarmWalletError> {
+    return swarmWalletApi.verifyChallenge(identityKey, signature)
   }
 
   override suspend fun getLoginConfiguration(): RequestResult<LoginConfiguration, GetLoginConfigurationError> {

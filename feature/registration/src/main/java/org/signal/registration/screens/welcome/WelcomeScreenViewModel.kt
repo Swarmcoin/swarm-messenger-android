@@ -28,7 +28,7 @@ import org.signal.registration.screens.util.navigateTo
  * option (which depends on asynchronously-loaded pre-existing registration data) and handles the screen's navigation.
  */
 class WelcomeScreenViewModel(
-  repository: RegistrationRepository,
+  private val repository: RegistrationRepository,
   private val parentState: StateFlow<RegistrationFlowState>,
   private val parentEventEmitter: (RegistrationFlowEvent) -> Unit,
   private val hasPermissions: () -> Boolean,
@@ -63,7 +63,8 @@ class WelcomeScreenViewModel(
   fun applyEvent(state: WelcomeScreenState, event: WelcomeScreenEvents, parentEventEmitter: (RegistrationFlowEvent) -> Unit, stateEmitter: (WelcomeScreenState) -> Unit) {
     when (event) {
       is WelcomeScreenEvents.ParentStateChanged -> stateEmitter(applyParentState(state, event.parentState))
-      WelcomeScreenEvents.Continue -> navigateRequestingPermissions(RegistrationRoute.PhoneNumberEntry, parentEventEmitter)
+      // SWARM: with wallet sign-in, an account is a SWARM wallet rather than a phone number.
+      WelcomeScreenEvents.Continue -> navigateRequestingPermissions(if (repository.isSwarmWalletSignIn) RegistrationRoute.SwarmWallet else RegistrationRoute.PhoneNumberEntry, parentEventEmitter)
       WelcomeScreenEvents.HasOldPhone -> navigateRequestingPermissions(RegistrationRoute.QuickRestoreQrScan, parentEventEmitter)
       WelcomeScreenEvents.DoesNotHaveOldPhone -> navigateRequestingPermissions(RegistrationRoute.ArchiveRestoreSelection.forManualRestore(), parentEventEmitter)
       WelcomeScreenEvents.LinkDevice -> {
@@ -82,7 +83,9 @@ class WelcomeScreenViewModel(
       return state
     }
 
-    return state.copy(showRestoreOrTransfer = parentState.preExistingRegistrationData == null)
+    // SWARM: upstream's "restore or transfer" paths restore Signal backups and move a phone-number account between
+    // phones. With wallet sign-in, an account is restored from its recovery phrase on the wallet screen instead.
+    return state.copy(showRestoreOrTransfer = !repository.isSwarmWalletSignIn && parentState.preExistingRegistrationData == null)
   }
 
   private fun navigateRequestingPermissions(nextRoute: RegistrationRoute, parentEventEmitter: (RegistrationFlowEvent) -> Unit) {

@@ -9,6 +9,8 @@ import org.signal.core.util.BidiUtil
 import org.signal.core.util.E164Util
 import org.signal.core.util.LRUCache
 import org.signal.core.util.Util
+import org.signal.registration.swarm.SwarmWalletIdentity
+import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 
@@ -37,6 +39,11 @@ object SignalE164Util {
    */
   @JvmStatic
   fun prettyPrint(input: String): String {
+    // SWARM: a SWARM account identifier (+888 and 11 digits, derived from the account's identity key) is not a
+    // phone number, and no screen shows it. Everywhere a number would be displayed, the account says what it is.
+    if (SwarmWalletIdentity.isSwarmAccountIdentifier(input)) {
+      return AppDependencies.application.getString(R.string.SwarmAccount__display_instead_of_number)
+    }
     return BidiUtil.forceLtr(getFormatter().prettyPrint(input))
   }
 

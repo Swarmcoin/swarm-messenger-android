@@ -9,4 +9,33 @@
     <!-- Welcome screen: the link to the terms and privacy policy. Upstream's string also calls the
          publisher a 501c3 nonprofit, which SWARM is not. -->
     <string name="SwarmRegistration__terms_and_privacy">Terms &amp; Privacy Policy</string>
+
+    <!-- Wallet sign-in: the screen that replaces the phone number. -->
+    <string name="SwarmWallet__choose_title">Your account is a SWARM wallet</string>
+    <string name="SwarmWallet__choose_body">SWARM Messenger has no phone numbers. Your account comes from a wallet recovery phrase: 24 words that open both your messages and your SWARM wallet.</string>
+    <string name="SwarmWallet__create">Create a new wallet</string>
+    <string name="SwarmWallet__restore">I have a recovery phrase</string>
+
+    <string name="SwarmWallet__write_down_title">Write down these 24 words</string>
+    <string name="SwarmWallet__write_down_body">They are the only way back into this account and its wallet, on this phone or any other. Anyone who has them has both. Write them on paper, in this order, and keep them safe. SWARM cannot recover them for you, and they will not be shown again.</string>
+    <string name="SwarmWallet__written_down">I have written these 24 words down</string>
+
+    <string name="SwarmWallet__restore_title">Enter your recovery phrase</string>
+    <string name="SwarmWallet__restore_body">The 24 words of your SWARM wallet, in order, separated by spaces. The same words always give the same account.</string>
+    <string name="SwarmWallet__phrase_label">Recovery phrase</string>
+    <string name="SwarmWallet__phrase_word_count">%1$d of 24 words</string>
+    <string name="SwarmWallet__phrase_unknown_word">Word %1$d is not a recovery phrase word. Check the spelling.</string>
+    <string name="SwarmWallet__phrase_checksum">These words do not form a valid recovery phrase. Check each word and its order.</string>
+    <string name="SwarmWallet__phrase_ok">24 words, valid.</string>
+
+    <string name="SwarmWallet__continue">Continue</string>
+    <string name="SwarmWallet__back">Back</string>
+    <string name="SwarmWallet__signing_in">Signing in…</string>
+
+    <string name="SwarmWallet__error_title">Could not sign in</string>
+    <string name="SwarmWallet__error_network">SWARM Messenger could not reach its server. Check your connection and try again.</string>
+    <string name="SwarmWallet__error_rate_limited">Too many attempts from this network. Wait a few minutes and try again.</string>
+    <string name="SwarmWallet__error_identifier_taken">This wallet cannot be used for SWARM Messenger, because its account address is already taken by another wallet. Create a new wallet.</string>
+    <string name="SwarmWallet__error_rejected">The server did not accept the sign-in. Try again.</string>
+    <string name="SwarmWallet__error_unknown">Something went wrong while signing in. Try again.</string>
 </resources>

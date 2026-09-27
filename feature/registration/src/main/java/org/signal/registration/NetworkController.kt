@@ -48,6 +48,7 @@ import org.signal.network.api.RegistrationApiV2.SubmitVerificationCodeError
 import org.signal.network.api.RegistrationApiV2.SvrCredentials
 import org.signal.network.api.RegistrationApiV2.UpdateSessionError
 import org.signal.network.api.RegistrationApiV2.VerificationCodeTransport
+import org.signal.network.api.SwarmWalletApi
 import org.signal.network.service.UsernameService.ConfirmUsernameError
 import org.signal.network.service.UsernameService.ConfirmedUsername
 import org.signal.network.service.UsernameService.ReserveUsernameError
@@ -477,6 +478,26 @@ interface NetworkController {
     avatar: ByteArray?,
     discoverableByPhoneNumber: Boolean
   ): RequestResult<Unit, SetProfileError>
+
+  /**
+   * SWARM addition (wallet sign-in). Asks the chat server for a challenge for the ACI identity key a SWARM wallet
+   * derives. See [SwarmWalletApi].
+   *
+   * `POST /v1/swarm/registration/challenge`
+   */
+  suspend fun requestSwarmWalletChallenge(identityKey: IdentityKey): RequestResult<SwarmWalletApi.Challenge, SwarmWalletApi.SwarmWalletError> {
+    return RequestResult.ApplicationError(UnsupportedOperationException("SWARM wallet sign-in is not available through this network controller"))
+  }
+
+  /**
+   * SWARM addition (wallet sign-in). Answers the challenge with the identity key's signature; the server returns the
+   * account identifier the key derives and a single-use registration password for it.
+   *
+   * `POST /v1/swarm/registration/verify`
+   */
+  suspend fun verifySwarmWalletChallenge(identityKey: IdentityKey, signature: ByteArray): RequestResult<SwarmWalletApi.Verification, SwarmWalletApi.SwarmWalletError> {
+    return RequestResult.ApplicationError(UnsupportedOperationException("SWARM wallet sign-in is not available through this network controller"))
+  }
 
   sealed class RestoreMasterKeyError : BadRequestError {
     data class WrongPin(val triesRemaining: Int) : RestoreMasterKeyError()
