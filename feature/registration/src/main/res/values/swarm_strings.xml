@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2026 SWARM
+  ~ SPDX-License-Identifier: AGPL-3.0-only
+  -->
+<!-- SWARM Messenger strings for the registration module. Kept out of strings.xml so upstream merges never
+     touch them. English only for now: a locale without a key falls back to this file. -->
+<resources>
+    <!-- Welcome screen: the link to the terms and privacy policy. Upstream's string also calls the
+         publisher a 501c3 nonprofit, which SWARM is not. -->
+    <string name="SwarmRegistration__terms_and_privacy">Terms &amp; Privacy Policy</string>
+</resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="signal_dark_colorPrimary">#B6C5FA</color>
-    <color name="signal_dark_colorPrimaryContainer">#464B5C</color>
+    <color name="signal_dark_colorPrimary">#FF8A1F</color>
+    <color name="signal_dark_colorPrimaryContainer">#5C2D00</color>
     <color name="signal_dark_colorSecondary">#C1C6DD</color>
     <color name="signal_dark_colorSecondaryContainer">#414659</color>
     <color name="signal_dark_colorSurface">#1B1C1F</color>
@@ -10,8 +10,8 @@
     <color name="signal_dark_colorBackground">#1B1C1F</color>
     <color name="signal_dark_colorError">#FFB4A9</color>
     <color name="signal_dark_colorErrorContainer">#930006</color>
-    <color name="signal_dark_colorOnPrimary">#1E2438</color>
-    <color name="signal_dark_colorOnPrimaryContainer">#DBE1FC</color>
+    <color name="signal_dark_colorOnPrimary">#0A0908</color>
+    <color name="signal_dark_colorOnPrimaryContainer">#FFDCC5</color>
     <color name="signal_dark_colorOnSecondary">#2A3042</color>
     <color name="signal_dark_colorOnSecondaryContainer">#DCE1F9</color>
     <color name="signal_dark_colorOnSurface">#E2E1E5</color>

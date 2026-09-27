@@ -20,7 +20,7 @@
     <!-- Permissions                             -->
     <!-- ======================================= -->
     <permission android:name="${applicationId}.ACCESS_SECRETS" android:label="Access to TextSecure Secrets" android:protectionLevel="signature" />
-    <uses-permission android:name="org.thoughtcrime.securesms.ACCESS_SECRETS" />
+    <uses-permission android:name="${applicationId}.ACCESS_SECRETS" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -707,7 +707,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.thoughtcrime.securesms.contact" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.green.swarm.messenger.contact" />
             </intent-filter>
         </activity>
 
@@ -723,13 +723,13 @@
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.thoughtcrime.securesms.call" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.green.swarm.messenger.call" />
             </intent-filter>
 
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.thoughtcrime.securesms.videocall" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.green.swarm.messenger.videocall" />
             </intent-filter>
 
         </activity>

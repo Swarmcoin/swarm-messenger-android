@@ -66,7 +66,7 @@ public class StorageUtil {
 
   public static File getBackupDirectory() throws NoExternalStorageException {
     File   storage   = Environment.getExternalStorageDirectory();
-    File   signal    = new File(storage, "Signal");
+    File   signal    = new File(storage, "SWARM Messenger"); // SWARM: never share a folder with Signal
     File   backups   = new File(signal, "Backups");
     String packageId = CoreUiDependencies.INSTANCE.getPackageId();
 
@@ -80,7 +80,7 @@ public class StorageUtil {
 
   public static File getBackupV2Directory() throws NoExternalStorageException {
     File   storage   = Environment.getExternalStorageDirectory();
-    File   backups   = new File(storage, "Signal");
+    File   backups   = new File(storage, "SWARM Messenger"); // SWARM: never share a folder with Signal
     String packageId = CoreUiDependencies.INSTANCE.getPackageId();
 
     //noinspection ConstantConditions

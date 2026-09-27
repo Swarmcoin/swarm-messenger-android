@@ -25,6 +25,7 @@ import org.signal.core.ui.compose.SignalIcons
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.components.settings.app.appearance.navbar.ChooseNavigationBarStyleFragment
 import org.thoughtcrime.securesms.keyvalue.SettingsValues
+import org.thoughtcrime.securesms.swarm.SwarmBuild
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
 
 /**
@@ -141,7 +142,7 @@ private fun AppearanceSettingsScreen(
         )
       }
 
-      if (Build.VERSION.SDK_INT >= 26) {
+      if (SwarmBuild.ALTERNATE_APP_ICONS && Build.VERSION.SDK_INT >= 26) {
         item {
           Rows.TextRow(
             text = stringResource(R.string.preferences__app_icon),

@@ -42,7 +42,7 @@ class TotpRepository(
   companion object {
     private val TAG = Log.tag(TotpRepository::class)
 
-    private const val ISSUER = "Signal"
+    private const val ISSUER = "SWARM Messenger" // SWARM
 
     /** The algorithm names the Key Uri Format defines, keyed by what [TotpParameters.algorithm] calls them. */
     private val URI_ALGORITHMS = mapOf(

@@ -251,11 +251,13 @@ android {
       applicationIdSuffix = ".test_run"
     }
 
+    // SWARM: its own application id, so SWARM Messenger installs beside Signal and never shares its data.
+    applicationId = "green.swarm.messenger"
     minSdk = libs.versions.minSdk.get().toInt()
     targetSdk = libs.versions.targetSdk.get().toInt()
 
     vectorDrawables.useSupportLibrary = true
-    project.ext.set("archivesBaseName", "Signal")
+    project.ext.set("archivesBaseName", "SWARM-Messenger")
 
     manifestPlaceholders["mapsKey"] = "AIzaSyCSx9xea86GwDKGznCAULE9Y5a8b-TfN9U"
 

@@ -11,7 +11,8 @@ object ChatColorsPalette {
     @JvmField
     val ULTRAMARINE = ChatColors.forColor(
       ChatColors.Id.BuiltIn,
-      0xFF315FF4.toInt()
+      // SWARM: the default outgoing bubble is a deep Hive Orange; message text on it is white (4.9:1).
+      0xFFB85300.toInt()
     )
 
     // endregion

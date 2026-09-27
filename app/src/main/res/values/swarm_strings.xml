@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2026 SWARM
+  ~ SPDX-License-Identifier: AGPL-3.0-only
+  -->
+<!-- SWARM Messenger strings. Kept out of strings.xml so upstream merges never touch them. English only
+     for now: a locale without a key falls back to this file. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Licence attribution in Settings > Help. Required by the AGPL-3.0; must never be removed or reworded. -->
+    <string name="SwarmAbout__based_on_signal">SWARM Messenger is based on Signal by Signal Messenger, LLC</string>
+</resources>

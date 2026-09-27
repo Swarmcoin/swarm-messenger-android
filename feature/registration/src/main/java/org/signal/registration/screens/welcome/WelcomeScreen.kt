@@ -318,8 +318,9 @@ private fun LargeLayout(
 private fun HeroImage(
   modifier: Modifier = Modifier
 ) {
+  // SWARM: the SWARM mark instead of upstream's illustration.
   Image(
-    painter = painterResource(R.drawable.welcome),
+    painter = painterResource(R.drawable.swarm_mark),
     contentDescription = null,
     modifier = modifier.attachDebugLogHelper(),
     contentScale = ContentScale.Fit
@@ -355,7 +356,8 @@ private fun TermsAndPrivacy(
     modifier = modifier
   ) {
     Text(
-      text = stringResource(R.string.RegistrationActivity_terms_and_privacy),
+      // SWARM: upstream's string also says "Signal is a 501c3 nonprofit", in every translation.
+      text = stringResource(R.string.SwarmRegistration__terms_and_privacy),
       textAlign = TextAlign.Center
     )
   }

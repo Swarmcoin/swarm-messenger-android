@@ -80,9 +80,11 @@ private val typography = Typography().run {
   )
 }
 
+// SWARM: Hive Orange is the accent. The light scheme uses a deeper shade of it (#B85300) so text and
+// icons drawn in the primary colour stay legible on light surfaces (4.9:1 against white).
 private val lightColorScheme = lightColorScheme(
-  primary = Color(0xFF2C58C3),
-  primaryContainer = Color(0xFFD2DFFB),
+  primary = Color(0xFFB85300),
+  primaryContainer = Color(0xFFFFDCC5),
   secondary = Color(0xFF586071),
   secondaryContainer = Color(0xFFDCE5F9),
   surface = Color(0xFFFBFCFF),
@@ -93,7 +95,7 @@ private val lightColorScheme = lightColorScheme(
   error = Color(0xFFBA1B1B),
   errorContainer = Color(0xFFFFDAD4),
   onPrimary = Color(0xFFFFFFFF),
-  onPrimaryContainer = Color(0xFF051845),
+  onPrimaryContainer = Color(0xFF3A1800),
   onSecondary = Color(0xFFFFFFFF),
   onSecondaryContainer = Color(0xFF151D2C),
   onSurface = Color(0xFF1B1B1D),
@@ -164,9 +166,10 @@ private val darkExtendedColors = ExtendedColors(
   colorAlertDisabled = Color(0x80F44336)
 )
 
+// SWARM: Hive Orange #FF8A1F, with warm black #0A0908 on it.
 private val darkColorScheme = darkColorScheme(
-  primary = Color(0xFFB6C5FA),
-  primaryContainer = Color(0xFF464B5C),
+  primary = Color(0xFFFF8A1F),
+  primaryContainer = Color(0xFF5C2D00),
   secondary = Color(0xFFC1C6DD),
   secondaryContainer = Color(0xFF414659),
   surface = Color(0xFF1B1C1F),
@@ -176,8 +179,8 @@ private val darkColorScheme = darkColorScheme(
   background = Color(0xFF1B1C1F),
   error = Color(0xFFFFB4A9),
   errorContainer = Color(0xFF930006),
-  onPrimary = Color(0xFF1E2438),
-  onPrimaryContainer = Color(0xFFDBE1FC),
+  onPrimary = Color(0xFF0A0908),
+  onPrimaryContainer = Color(0xFFFFDCC5),
   onSecondary = Color(0xFF2A3042),
   onSecondaryContainer = Color(0xFFDCE1F9),
   onSurface = Color(0xFFE2E1E5),

@@ -120,12 +120,14 @@ class HelpSettingsFragment : ComposeFragment() {
             verticalAlignment = CenterVertically
           ) {
             TextAndLabel(
+              // SWARM: the attribution first, then upstream's copyright and licence notices. Upstream's third
+              // line ("Signal is a 501c3 nonprofit") is not true of SWARM and is not shown.
               label = StringBuilder().apply {
+                append(getString(R.string.SwarmAbout__based_on_signal))
+                append("\n")
                 append(getString(R.string.HelpFragment__copyright_signal_messenger))
                 append("\n")
                 append(getString(R.string.HelpFragment__licenced_under_the_agplv3))
-                append("\n")
-                append(getString(R.string.HelpSettingsFragment__signal_is_a_501c3))
               }.toString()
             )
           }

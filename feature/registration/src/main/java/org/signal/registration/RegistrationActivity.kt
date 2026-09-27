@@ -62,7 +62,8 @@ class RegistrationActivity : ComponentActivity() {
     val startFresh = intent.getBooleanExtra(START_FRESH_EXTRA, false)
 
     setContent {
-      SignalTheme(incognitoKeyboardEnabled = false) {
+      // SWARM: registration happens before there is a theme setting, so it uses SWARM's default: dark.
+      SignalTheme(isDarkMode = true, incognitoKeyboardEnabled = false) {
         Surface(modifier = Modifier.fillMaxSize()) {
           RegistrationNavHost(
             startDestination = startDestination,

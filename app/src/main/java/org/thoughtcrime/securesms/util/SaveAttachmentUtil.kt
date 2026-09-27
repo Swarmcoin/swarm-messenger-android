@@ -228,10 +228,10 @@ object SaveAttachmentUtil {
 
   private fun getExternalPathForType(contentType: String): String? {
     val storage: File? = when {
-      contentType.startsWith("video/") -> File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "Signal")
-      contentType.startsWith("audio/") -> File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "Signal")
-      contentType.startsWith("image/") -> File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Signal")
-      else -> File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "Signal")
+      contentType.startsWith("video/") -> File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES), "SWARM Messenger") // SWARM
+      contentType.startsWith("audio/") -> File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), "SWARM Messenger") // SWARM
+      contentType.startsWith("image/") -> File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "SWARM Messenger") // SWARM
+      else -> File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "SWARM Messenger") // SWARM
     }
 
     return storage?.let { ensureExternalPath(storage) }?.absolutePath

@@ -97,9 +97,9 @@ class SyncSystemContactLinksJob private constructor(parameters: Parameters) : Ba
 
     const val KEY = "SyncSystemContactLinksJob"
 
-    private const val MESSAGE_MIMETYPE = "vnd.android.cursor.item/vnd.org.thoughtcrime.securesms.contact"
-    private const val CALL_MIMETYPE = "vnd.android.cursor.item/vnd.org.thoughtcrime.securesms.call"
-    private const val VIDEO_CALL_MIMETYPE = "vnd.android.cursor.item/vnd.org.thoughtcrime.securesms.videocall"
+    private const val MESSAGE_MIMETYPE = "vnd.android.cursor.item/vnd.green.swarm.messenger.contact"
+    private const val CALL_MIMETYPE = "vnd.android.cursor.item/vnd.green.swarm.messenger.call"
+    private const val VIDEO_CALL_MIMETYPE = "vnd.android.cursor.item/vnd.green.swarm.messenger.videocall"
     private const val CONTACT_TAG = "__TS"
 
     fun buildContactLinkConfiguration(context: Context, account: Account): ContactLinkConfiguration {

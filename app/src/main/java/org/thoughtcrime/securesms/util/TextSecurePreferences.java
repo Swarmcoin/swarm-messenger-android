@@ -504,7 +504,7 @@ public class TextSecurePreferences {
    */
   @Deprecated
   public static String getTheme(Context context) {
-    return getStringPreference(context, THEME_PREF, DynamicTheme.systemThemeAvailable() ? "system" : "light");
+    return getStringPreference(context, THEME_PREF, "dark"); // SWARM: dark by default; the user can still choose
   }
 
   @Deprecated
