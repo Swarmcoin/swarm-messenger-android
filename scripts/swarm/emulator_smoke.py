@@ -252,6 +252,9 @@ def main():
     donate = [n.get("text") for n in settings if "donate" in n.get("text", "").lower()]
     if donate:
         raise RuntimeError(f"the settings page offers donations: {donate}")
+    # Upstream's Payments row is a MobileCoin wallet; SWARM Messenger offers none (SwarmBuild.MOBILECOIN_PAYMENTS).
+    if any(n.get("text", "").strip().lower() == "payments" for n in settings):
+        raise RuntimeError("the settings page offers MobileCoin payments")
 
     if ui.identifier_seen:
         raise RuntimeError(f"the +888 account identifier was shown on screen: {ui.identifier_seen}")

@@ -19,6 +19,7 @@ import org.thoughtcrime.securesms.jobs.Svr3MirrorJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.messageprocessingalarm.RoutineMessageFetchReceiver
 import org.thoughtcrime.securesms.net.SignalNetwork
+import org.thoughtcrime.securesms.swarm.SwarmBuild
 import org.thoughtcrime.securesms.util.RemoteConfig.REMOTE_VALUES
 import org.thoughtcrime.securesms.util.RemoteConfig.asBoolean
 import org.thoughtcrime.securesms.util.RemoteConfig.asInteger
@@ -666,7 +667,8 @@ object RemoteConfig {
     key = "android.payments.kill",
     hotSwappable = false
   ) { value ->
-    !value.asBoolean(false)
+    // SWARM: no MobileCoin wallet (SwarmBuild.MOBILECOIN_PAYMENTS), whatever the server's kill switch says.
+    SwarmBuild.MOBILECOIN_PAYMENTS && !value.asBoolean(false)
   }
 
   /**

@@ -59,7 +59,9 @@ class RemoteConfig_StaticValuesTest {
       "PROMPT_FOR_NOTIFICATION_LOGS",
       "overridableConfigs",
       "overrides",
-      "REMOTE_VALUES"
+      "REMOTE_VALUES",
+      // SWARM: deliberately always false, no MobileCoin wallet (SwarmBuild.MOBILECOIN_PAYMENTS, SwarmNoMobileCoinTest).
+      "payments"
     )
 
     val publicVals: List<KProperty1<*, *>> = RemoteConfig::class.memberProperties

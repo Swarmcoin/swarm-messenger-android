@@ -23,4 +23,12 @@ object SwarmBuild {
    * always reads false, whatever upstream's first-launch migration stored there.
    */
   const val FCM: Boolean = false
+
+  /**
+   * MobileCoin payments. Upstream's in-app wallet holds MobileCoin and talks to MobileCoin's consensus and Fog servers.
+   * SWARM Messenger's payments are to be in SWARM's own coin, so no MobileCoin wallet is offered: the payments
+   * remote-config flag reads off, which removes the Payments row and every other payments entry point the way
+   * upstream's own kill switch does.
+   */
+  const val MOBILECOIN_PAYMENTS: Boolean = false
 }
