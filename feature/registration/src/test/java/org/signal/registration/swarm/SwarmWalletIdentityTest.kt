@@ -55,7 +55,7 @@ class SwarmWalletIdentityTest {
 
     private val ALL_ONES = Vector(
       name = "all-ones entropy",
-      entropyHex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      entropyHex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       aciPublicKey = "BQ6Pzj4KiojM/8GeHWZRfKPSaPVN6SDYaala/FDHmvUL",
       pniPublicKey = "BdmZayL61kzx0DrCVNQcAkzN7pxBLroSZtuMLAfjPJ8V",
       accountIdentifier = "+88834279664637"
@@ -64,6 +64,7 @@ class SwarmWalletIdentityTest {
     private val VECTORS = listOf(ALL_ZERO, COUNTING, ALL_ONES)
 
     private fun phraseFor(vector: Vector): String {
+      require(vector.entropyHex.length == 64) { "${vector.name}: the entropy must be 32 bytes, 64 hex digits" }
       return Bip39.entropyToPhrase(ByteArray(32) { vector.entropyHex.substring(it * 2, it * 2 + 2).toInt(16).toByte() })
     }
 
