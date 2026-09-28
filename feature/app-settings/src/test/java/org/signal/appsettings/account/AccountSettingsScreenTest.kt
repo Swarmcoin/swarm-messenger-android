@@ -42,6 +42,9 @@ import org.signal.signallogin.SignalLoginTestTags
 class AccountSettingsScreenTest {
 
   companion object {
+    /** SWARM: every support link in the rebranded screen goes to SWARM's support page, not Signal's articles. */
+    private const val SWARM_SUPPORT = "https://swarm.green/support"
+
     /** Fixed so the "Added ..." subtitle a row renders is something the test can predict. */
     private const val CREATED_AT = 1_700_000_000_000L
     private val ADDED_TIME: String = DateUtils.getRelativeDateTimeString(
@@ -425,7 +428,7 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.DIALOG_MAX_TOTP_APPS_REACHED).assertIsDisplayed()
     composeTestRule.onNodeWithTag(Dialogs.TEST_TAG_ALERT_DIALOG_DISMISS_BUTTON).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690"))
+    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked(SWARM_SUPPORT))
     assertThat(events).contains(AccountSettingsEvent.DialogDismissed)
   }
 
@@ -436,7 +439,7 @@ class AccountSettingsScreenTest {
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.DIALOG_MAX_MFA_KEYS_REACHED).assertIsDisplayed()
     composeTestRule.onNodeWithTag(Dialogs.TEST_TAG_ALERT_DIALOG_DISMISS_BUTTON).performClick()
 
-    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690"))
+    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked(SWARM_SUPPORT))
     assertThat(events).contains(AccountSettingsEvent.DialogDismissed)
   }
 
@@ -447,7 +450,7 @@ class AccountSettingsScreenTest {
     scrollTo(AccountSettingsTestTags.LINK_SIGNAL_LOGIN_LEARN_MORE)
     clickLink(AccountSettingsTestTags.LINK_SIGNAL_LOGIN_LEARN_MORE)
 
-    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11197884108826"))
+    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked(SWARM_SUPPORT))
   }
 
   @Test
@@ -457,7 +460,7 @@ class AccountSettingsScreenTest {
     scrollTo(AccountSettingsTestTags.LINK_TWO_FACTOR_LEARN_MORE)
     clickLink(AccountSettingsTestTags.LINK_TWO_FACTOR_LEARN_MORE)
 
-    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked("https://support.signal.org/hc/articles/11228705649690"))
+    assertThat(events).contains(AccountSettingsEvent.LearnMoreClicked(SWARM_SUPPORT))
   }
 
   @Test
@@ -493,6 +496,27 @@ class AccountSettingsScreenTest {
     setContent(createState(isPhoneNumberless = true))
 
     composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_CHANGE_PHONE_NUMBER).assertDoesNotExist()
+  }
+
+  // SWARM: a wallet account's +888 identifier is not a phone number, so there is no "Change phone number" row. The row
+  // after it is scrolled into view first, so the row would have been composed if it were there.
+  @Test
+  fun givenASwarmWalletAccount_whenScreenDisplayed_thenChangePhoneNumberIsAbsent() {
+    setContent(createState(isSwarmWalletAccount = true))
+
+    scrollTo(AccountSettingsTestTags.ROW_TRANSFER_ACCOUNT)
+
+    composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_TRANSFER_ACCOUNT).assertIsDisplayed()
+    composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_CHANGE_PHONE_NUMBER).assertDoesNotExist()
+  }
+
+  @Test
+  fun givenAnAccountWithAPhoneNumber_whenScreenDisplayed_thenChangePhoneNumberIsShown() {
+    setContent(createState(isSwarmWalletAccount = false))
+
+    scrollTo(AccountSettingsTestTags.ROW_CHANGE_PHONE_NUMBER)
+
+    composeTestRule.onNodeWithTag(AccountSettingsTestTags.ROW_CHANGE_PHONE_NUMBER).assertIsDisplayed()
   }
 
   private fun setContent(state: AccountSettingsState) {
@@ -535,6 +559,7 @@ class AccountSettingsScreenTest {
     clientDeprecated: Boolean = false,
     canTransferWhileUnregistered: Boolean = true,
     isPhoneNumberless: Boolean = false,
+    isSwarmWalletAccount: Boolean = false,
     signalLogin: AccountSettingsState.SignalLogin? = null,
     dialog: Dialog = Dialog.None
   ): AccountSettingsState {
@@ -547,6 +572,7 @@ class AccountSettingsScreenTest {
       clientDeprecated = clientDeprecated,
       canTransferWhileUnregistered = canTransferWhileUnregistered,
       isPhoneNumberless = isPhoneNumberless,
+      isSwarmWalletAccount = isSwarmWalletAccount,
       signalLogin = signalLogin,
       dialog = dialog
     )

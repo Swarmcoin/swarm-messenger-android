@@ -16,6 +16,7 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.lock.v2.PinKeyboardType
 import org.thoughtcrime.securesms.pin.SvrRepository
+import org.thoughtcrime.securesms.swarm.SwarmAccount
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.whispersystems.signalservice.api.kbs.PinHashUtil
 import java.io.IOException
@@ -49,6 +50,9 @@ class AccountSettingsRepository {
   fun getPinKeyboardType(): PinKeyboardType = SignalStore.pin.keyboardType
 
   fun isPhoneNumberless(): Boolean = SignalStore.account.isPhoneNumberless
+
+  /** SWARM: a wallet account's +888 identifier is not a phone number. */
+  fun isSwarmWalletAccount(): Boolean = SwarmAccount.isWalletAccount()
 
   fun getMaxTotpApps(): Int = totpRepository.getMaxApps()
 

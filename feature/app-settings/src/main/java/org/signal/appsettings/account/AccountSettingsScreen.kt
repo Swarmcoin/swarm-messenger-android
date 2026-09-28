@@ -271,7 +271,8 @@ fun AccountSettingsScreen(
         )
       }
 
-      if (!state.userUnregistered && !state.isPhoneNumberless) {
+      // SWARM: a wallet account's +888 identifier is not a phone number; there is nothing to change it to.
+      if (!state.userUnregistered && !state.isPhoneNumberless && !state.isSwarmWalletAccount) {
         item {
           Rows.TextRow(
             text = stringResource(R.string.AccountSettingsFragment__change_phone_number),

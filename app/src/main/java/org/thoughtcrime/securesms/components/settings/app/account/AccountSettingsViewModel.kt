@@ -245,6 +245,7 @@ class AccountSettingsViewModel(
         userUnregistered = repository.isUserUnregistered(),
         clientDeprecated = repository.isClientDeprecated(),
         isPhoneNumberless = isPhoneNumberless,
+        isSwarmWalletAccount = repository.isSwarmWalletAccount(),
         // Held onto across refreshes so a resume doesn't drop the list back to its loading state.
         signalLogin = if (isPhoneNumberless) it.signalLogin ?: SignalLogin(maxTotpApps = repository.getMaxTotpApps(), maxMfaKeys = repository.getMaxMfaKeys()) else null
       )

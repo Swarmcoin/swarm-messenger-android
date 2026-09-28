@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.swarm.SwarmAccount
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.livedata.Store
 
@@ -68,7 +69,8 @@ class PrivacySettingsViewModel(
 
   private fun getState(): PrivacySettingsState {
     return PrivacySettingsState(
-      hasPhoneNumber = !SignalStore.account.isPhoneNumberless,
+      // SWARM: no "Phone number" row for a wallet account, whose +888 identifier is not a phone number.
+      hasPhoneNumber = SwarmAccount.hasPhoneNumber(),
       blockedCount = 0,
       readReceipts = TextSecurePreferences.isReadReceiptsEnabled(AppDependencies.application),
       typingIndicators = TextSecurePreferences.isTypingIndicatorsEnabled(AppDependencies.application),

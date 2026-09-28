@@ -14,6 +14,11 @@ data class AccountSettingsState(
   val clientDeprecated: Boolean = false,
   val canTransferWhileUnregistered: Boolean = true,
   val isPhoneNumberless: Boolean = false,
+  /**
+   * SWARM: the account is a SWARM wallet account. Its `+888` identifier is not a phone number, so the phone-number
+   * rows (Change phone number) are not shown.
+   */
+  val isSwarmWalletAccount: Boolean = false,
   val signalLogin: SignalLogin? = null,
   val dialog: Dialog = Dialog.None
 ) {

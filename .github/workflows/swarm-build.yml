@@ -152,6 +152,7 @@ jobs:
           ./gradlew --continue
           :Signal-Android:testWebsiteProdDebugUnitTest
           :feature:registration:testDebugUnitTest
+          :feature:app-settings:testDebugUnitTest
           :lib:libsignal-service:test
           :lib:network:test
 

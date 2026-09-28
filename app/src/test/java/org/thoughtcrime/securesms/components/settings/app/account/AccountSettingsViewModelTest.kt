@@ -73,6 +73,7 @@ class AccountSettingsViewModelTest {
     every { repository.isClientDeprecated() } returns false
     every { repository.getPinKeyboardType() } returns PinKeyboardType.NUMERIC
     every { repository.isPhoneNumberless() } returns false
+    every { repository.isSwarmWalletAccount() } returns false
     every { repository.getMaxTotpApps() } returns 2
     every { repository.getMaxMfaKeys() } returns 10
     coEvery { repository.getTwoFactorMethods() } returns AccountSettingsRepository.TwoFactorMethodsResult.Success(emptyList())
@@ -324,6 +325,26 @@ class AccountSettingsViewModelTest {
     assertThat(viewModel.state.value.signalLogin?.loadState).isEqualTo(LoadState.LOADED)
     assertThat(viewModel.state.value.signalLogin?.maxTotpApps).isEqualTo(2)
     assertThat(viewModel.state.value.signalLogin?.maxMfaKeys).isEqualTo(10)
+  }
+
+  // SWARM: a wallet account's +888 identifier is not a phone number. It is not phone-numberless in upstream's sense
+  // (it has a PNI), so only the phone-number rows go, not the PIN or Signal Login sections.
+  @Test
+  fun `a SWARM wallet account is marked so the screen leaves out Change phone number`() = runTest(testDispatcher) {
+    every { repository.isSwarmWalletAccount() } returns true
+
+    val viewModel = createViewModel()
+
+    assertThat(viewModel.state.value.isSwarmWalletAccount).isTrue()
+    assertThat(viewModel.state.value.isPhoneNumberless).isFalse()
+    assertThat(viewModel.state.value.signalLogin).isNull()
+  }
+
+  @Test
+  fun `an account with a phone number is not marked as a SWARM wallet account`() = runTest(testDispatcher) {
+    val viewModel = createViewModel()
+
+    assertThat(viewModel.state.value.isSwarmWalletAccount).isFalse()
   }
 
   /** An empty list says nothing on its own, so the screen leans on the load state to know we haven't heard back yet. */
