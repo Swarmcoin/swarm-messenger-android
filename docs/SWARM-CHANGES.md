@@ -51,8 +51,9 @@ Two documents live beside this one:
 | File | Change | Status |
 | --- | --- | --- |
 | `app/build.gradle.kts` | `websiteProdDebug` added to `selectableVariants`. Upstream builds `website` only as `Spinner` (starts an on-device database inspection server) or `Release` (minified, needs a signing key). | implemented |
-| `.github/workflows/swarm-build.yml` (new) | GitHub-hosted `ubuntu-latest`, on pushes to `swarm-main` and `swarm-next`, pull requests and manual runs: job `apk` builds `:Signal-Android:assembleWebsiteProdDebug` and runs the endpoint scan; job `unit-tests` runs the app's unit tests for the same variant plus `:feature:registration`, `:lib:libsignal-service`, `:lib:network`; job `release` (pushes to `swarm-main` only) publishes a pre-release `swarm-messenger-android-<yyyymmdd>-<shortsha>` with the APKs, `SHA256SUMS.txt` and the scan output. A Gradle user-home `gradle.properties` lowers the 12 GB heap `gradle.properties` asks for, so Gradle and the Kotlin daemon fit a 16 GB runner. | implemented |
+| `.github/workflows/swarm-build.yml` (new) | GitHub-hosted `ubuntu-latest`, on pushes to `swarm-main` and `swarm-next`, pull requests and manual runs: job `apk` builds `:Signal-Android:assembleWebsiteProdDebug` and runs the endpoint scan; job `unit-tests` runs the app's unit tests for the same variant plus `:feature:registration`, `:feature:app-settings` (from wave 1b), `:lib:libsignal-service`, `:lib:network`; job `release` (pushes to `swarm-main` only) publishes a pre-release `swarm-messenger-android-<yyyymmdd>-<shortsha>` with the APKs, `SHA256SUMS.txt` and the scan output. A Gradle user-home `gradle.properties` lowers the 12 GB heap `gradle.properties` asks for, so Gradle and the Kotlin daemon fit a 16 GB runner. | implemented |
 | `scripts/swarm/endpoint_scan.py` (new) | Reads the generated `BuildConfig.java`, the merged `AndroidManifest.xml`, the merged default-locale `values.xml` and the APK's text assets of the built variant. Fails on any host under `signal.org`, `signal.art`, `signalcaptchas.org`, `signaldonations.org`, `whispersystems.org` (so `storage.`, `cdsi.`, `sfu.voip.`, `updates.` and every other Signal service host), on an http(s) intent filter for `signal.me` / `signal.group` / `signal.link` / `signal.tube` (with `autoVerify`, Android itself fetches `/.well-known/assetlinks.json` from that host at install time), and on Firebase/FCM components, permissions and project settings. Reports without failing: `sgnl://` deep links, Google Play services components from dependencies, and how often Signal hosts still occur in compiled code. `SWARM_SCAN_MODE` in the workflow is `report` until the SWARM endpoints are in, then `enforce`. | implemented |
+| `.github/workflows/swarm-emulator-smoke.yml`, `scripts/swarm/emulator_smoke.py` (new) | The end-to-end proof on an API 34 x86_64 emulator (hosted runner, KVM), on a push to `swarm-smoke` or by hand: builds the APK, creates a disposable SWARM wallet account on `chat.swarm.green` through the real screens, names the profile, reaches the conversation list, and fails if FCM reads as on, if the authenticated chat connection never opens, if Settings offers Donate or Payments, if any phone-number row is offered (section 8) or if `+888` is ever on screen. A manual run with `peer_username` (wave 1b) also messages that SWARM username - New chat > Find by username > a text, waits for the peer's reply, answers again - so one run proves both directions with a desktop (section 9). UI dumps taken while a wallet screen is up are blanked before they are written, so the 24 words can never reach the artifact. | implemented, tested |
 | `.github/workflows/docker.yml`, `.github/workflows/stale.yml` | Removed. Both are `schedule` workflows, and schedules run on the default branch: the first would run upstream's hour-long reproducible-build container every night on this repository, the second would label and close this repository's issues. Upstream's `android.yml` and `diffuse.yml` are kept unchanged; they trigger only on pull requests and on upstream's own branch names, and `android.yml` asks for a runner size this organisation does not have. | implemented |
 
 ---
@@ -196,20 +197,40 @@ into trust managers by `BlacklistingTrustManager`. Upstream's store holds one ce
 CA (`CN=Signal Messenger`, SHA-256 `DD:B0:F9:2B:B9:5C:8D:6F:D2:02:EA:6E:8C:C5:CC:D1:82:B5:44:F8:CD:69:6F:47:D5:80:65:9D:DC:9D:F6:5A`),
 so a Let's Encrypt certificate such as `chat.swarm.green`'s could never validate.
 
-SWARM's store holds exactly the two ISRG roots. **Status: implemented; tested by `SwarmTrustStoreTest`.**
+SWARM's store holds exactly four Let's Encrypt roots: the two ISRG roots (wave 1, 2026-09-27) and the two roots
+of Let's Encrypt's new hierarchy (wave 1b, 2026-09-28). **Status: implemented; tested by `SwarmTrustStoreTest`.**
 
 | Alias | Certificate | SHA-256 fingerprint | Valid until |
 | --- | --- | --- | --- |
 | `isrg-root-x1` | `C=US, O=Internet Security Research Group, CN=ISRG Root X1` (RSA 4096) | `96:BC:EC:06:26:49:76:F3:74:60:77:9A:CF:28:C5:A7:CF:E8:A3:C0:AA:E1:1A:8F:FC:EE:05:C0:BD:DF:08:C6` | 2035-06-04 |
 | `isrg-root-x2` | `C=US, O=Internet Security Research Group, CN=ISRG Root X2` (ECDSA P-384) | `69:72:9B:8E:15:A8:6E:FC:17:7A:57:AF:B7:17:1D:FC:64:AD:D2:8C:2F:CA:8C:F1:50:7E:34:45:3C:CB:14:70` | 2040-09-17 |
+| `isrg-root-ye` | `C=US, O=ISRG, CN=Root YE` (ECDSA P-384) | `E1:4F:FC:AD:5B:00:25:73:10:06:CA:A4:3A:12:1A:22:D8:E9:70:0F:4F:B9:CF:85:2F:02:A7:08:AA:5D:56:66` | 2045-09-02 |
+| `isrg-root-yr` | `C=US, O=ISRG, CN=Root YR` (RSA 4096) | `E5:7B:7E:6F:15:0C:41:91:02:E8:D5:C0:55:72:9F:F9:67:B9:D1:A8:29:BF:00:CE:C8:9C:A6:04:EB:F4:A8:6F` | 2045-09-02 |
 
-The store file: 2,063 bytes, BKS version 2 (the format upstream's store also uses, which Android reads),
-SHA-256 `5928dd3854610310b662fdc93d39b0fdf97dbc1f3ad3f3555516bb332685a07e`.
+The store file: 3,941 bytes, BKS version 2 (the format upstream's store also uses, which Android reads),
+SHA-256 `7aa8403a915e82729c71447be205383d85cd5d55cbf97cc287dad7d076645b2b`. (Wave 1's two-root store was 2,063
+bytes, SHA-256 `5928dd3854610310b662fdc93d39b0fdf97dbc1f3ad3f3555516bb332685a07e`.)
 
-### How it was made (2026-09-27, Windows workstation, Temurin JDK 26.0.2 keytool, OpenSSL 3.2.3)
+### Why four roots
 
-The two roots were taken from the JDK's own `cacerts` rather than downloaded, and their fingerprints
-checked against the values Let's Encrypt publishes (above):
+On 2026-09-27 and again on 2026-09-28 (byte for byte the same chain) `chat.swarm.green` and
+`cdn.chat.swarm.green` served Let's Encrypt's new hierarchy with its cross-signatures: leaf → `YE2` →
+`Root YE` (signed by ISRG Root X2) → `ISRG Root X2` (signed by ISRG Root X1). With the cross-signatures in the
+handshake, X1 or X2 completes the path. Let's Encrypt also lists the shorter chain leaf → `YE2` → `Root YE`
+as supported, and its gen-Y test sites (`valid.ye.test-certs.letsencrypt.org`,
+`valid.yr.test-certs.letsencrypt.org`) already serve only leaf and intermediate. The day `chat.swarm.green`'s
+chain loses the cross-signatures, a store holding X1 and X2 alone cannot complete it and the app is locked out
+of its own server. With `Root YE` and `Root YR` in the store, both kinds of chain validate.
+
+On 2026-09-28 Let's Encrypt's certificates page said Root YE and Root YR are "not yet included in Root Program
+Trust Stores". They are in neither the JDK's `cacerts`, Windows' root stores, Mozilla's bundle (Python
+`certifi`, Git's `ca-bundle.crt`) nor Node's bundled roots, so they were taken from Let's Encrypt and checked
+against what is already trusted.
+
+### How it was made
+
+Wave 1 (2026-09-27, Temurin JDK 26.0.2 keytool, OpenSSL 3.2.3): X1 and X2 were exported from the JDK's own
+`cacerts` and their fingerprints checked against the values Let's Encrypt publishes (above):
 
 ```sh
 keytool -exportcert -rfc -cacerts -storepass changeit \
@@ -219,29 +240,71 @@ keytool -exportcert -rfc -cacerts -storepass changeit \
 openssl x509 -in isrg-root-x1.pem -noout -subject -fingerprint -sha256
 openssl x509 -in isrg-root-x2.pem -noout -subject -fingerprint -sha256
 
-BC=bcprov-jdk18on-1.84.jar   # org.bouncycastle:bcprov-jdk18on:1.84 from Maven Central
+BC=bcprov-jdk18on-1.84.jar   # org.bouncycastle:bcprov-jdk18on:1.84 from Maven Central (SHA-1 2d565178…e96b, as published)
 for a in x1 x2; do
   keytool -importcert -noprompt -storetype BKS \
     -providerclass org.bouncycastle.jce.provider.BouncyCastleProvider -providerpath "$BC" \
     -keystore whisper.store -storepass whisper -alias isrg-root-$a -file isrg-root-$a.pem
 done
-keytool -list -storetype BKS -providerclass org.bouncycastle.jce.provider.BouncyCastleProvider \
+```
+
+Wave 1b (2026-09-28, the same tools, Opus M5-A2): the self-signed roots and their cross-signed versions from
+Let's Encrypt, then three independent checks before anything was imported into the wave 1 store:
+
+```sh
+for n in root-ye root-yr root-ye-by-x2 root-yr-by-x1; do
+  curl -sSo $n.pem https://letsencrypt.org/certs/gen-y/$n.pem
+done
+# 1. Each is self-signed (CA:TRUE, keyCertSign and cRLSign):
+openssl verify -CAfile root-ye.pem root-ye.pem
+openssl verify -CAfile root-yr.pem root-yr.pem
+# 2. The cross-signed copies chain to the X roots already trusted (exported from the JDK above), and each
+#    self-signed root holds exactly their subject and key (SPKI SHA-256 b0292ae5…47bc for Root YE - the very
+#    certificate chat.swarm.green serves as its third - and 7e4e8838…8bcf for Root YR):
+openssl verify -CAfile isrg-root-x2.pem root-ye-by-x2.pem
+openssl verify -CAfile isrg-root-x1.pem root-yr-by-x1.pem
+openssl x509 -in root-ye.pem -noout -pubkey | openssl pkey -pubin -outform DER | openssl dgst -sha256
+# 3. The same fingerprints on crt.sh: Root YE is crt.sh ID 20878464462, Root YR crt.sh ID 20878464596 (CA IDs
+#    430535 and 430543, the ones letsencrypt.org links to).
+for a in ye yr; do
+  keytool -importcert -noprompt -storetype BKS \
+    -providerclass org.bouncycastle.jce.provider.BouncyCastleProvider -providerpath "$BC" \
+    -keystore whisper.store -storepass whisper -alias isrg-root-$a -file root-$a.pem
+done
+keytool -list -v -storetype BKS -providerclass org.bouncycastle.jce.provider.BouncyCastleProvider \
   -providerpath "$BC" -keystore whisper.store -storepass whisper
 ```
 
-### What chat.swarm.green serves, and why both roots
+`openssl verify` also showed: `chat.swarm.green`'s leaf with only `YE2` as intermediate validates with `Root YE`
+alone and fails with X1 and X2 alone; the two test sites' chains validate with `Root YE` / `Root YR` and fail with
+X1 and X2 alone.
 
-On 2026-09-27 `chat.swarm.green` and `cdn.chat.swarm.green` served Let's Encrypt's new hierarchy with its
-cross-signatures: leaf → `YE2` → `ISRG Root YE` (signed by ISRG Root X2) → `ISRG Root X2` (signed by
-ISRG Root X1). With the cross-signatures in the handshake, either root completes the path:
-`openssl verify` succeeds with X1 alone, with X2 alone and with both. The recorded chain is kept as
-`app/src/test/resources/swarm/chat-swarm-green-chain-2026-09-27.pem` and `SwarmTrustStoreTest` validates it
-(PKIX, at a fixed date inside the leaf's validity) along both paths, checks that the store holds exactly
-the two roots and not Signal's CA, and that it is a version-2 BKS file.
+### The tests
 
-**Proposed:** when Let's Encrypt stops sending the cross-signed certificates, only chains to
-`ISRG Root YE` / `ISRG Root YR` will be served; add those two roots then (same commands, from the JDK's
-`cacerts` once it carries them). Until then X1 and X2 are what the brief asked for and what validates.
+Recorded chains in `app/src/test/resources/swarm/`: `chat-swarm-green-chain-2026-09-27.pem` (still what the server
+sends on 2026-09-28), `letsencrypt-test-site-ye-chain-2026-09-28.pem` and
+`letsencrypt-test-site-yr-chain-2026-09-28.pem` (leaf and `YE1` / `YR1`; the leaves are valid until 2026-10-01),
+and `letsencrypt-root-yr-by-x1.pem`. `SwarmTrustStoreTest` checks, with the JDK's own X.509 and PKIX code at
+fixed dates inside each certificate's validity: the store holds exactly the four roots and not Signal's CA; it is
+a version-2 BKS file; every root is a self-signed CA; Root YE and Root YR hold the subject and key that X2 and X1
+vouch for; `chat.swarm.green`'s chain validates to Root YE, to X2 and to X1; its leaf and intermediate alone
+validate with Root YE and do not with X1 and X2; the two test-site chains validate with the store and do not with
+X1 and X2 alone.
+
+### What this store does not cover
+
+`whisper.store` is the trust store of the app's own HTTP connections (OkHttp): wallet sign-in and registration,
+profiles, storage, attachments on the CDN. The chat connection that carries every message - libsignal's websocket
+and gRPC on `chat.swarm.green` - verifies the server against libsignal's own roots for its SWARM environment:
+`SWARM_ROOT_CERTIFICATES` in `Swarm-Official/swarm-libsignal`, `rust/net/src/certs.rs`, built from
+`rust/net/res/swarm/isrg-root-x1.cer` and `isrg-root-x2.cer` only (branch `swarm-v0.102.2` at `6ad387777`, the
+source of `0.102.2-swarm.1`). If `chat.swarm.green`'s chain loses the cross-signatures, this app can still
+register, but its libsignal chat connection cannot connect until that library trusts Root YE too.
+
+**Proposed:** add Root YE and Root YR (the two files above, same checks) to `rust/net/res/swarm/` on every
+`swarm-libsignal` branch the apps use, publish new `-swarm.N` builds and move the apps to them. When Let's Encrypt
+adds or retires a root, repeat the checks above; once Root YE and Root YR are in the JDK's `cacerts`, re-export
+them from there and compare them with the store's.
 
 ---
 
@@ -300,3 +363,76 @@ what the phrase may touch, and every test). In short:
 
 No PIN: after registration the flow records the PIN opt-out and a new-account restore decision, exactly as
 upstream does when a person skips the PIN, and completes.
+
+---
+
+## 8. No phone-number rows for a SWARM wallet account
+
+**Status: implemented; unit-tested; checked on every emulator run.** Wave 1b, 2026-09-28, Opus M5-A2.
+
+A SWARM wallet account is registered under a `+888` identifier derived from its identity key (section 7). The
+server needs a value shaped like a phone number, but it is not one: nobody can find the account by it (the SWARM
+server runs no contact discovery), no screen shows it, and there is no number to change it to. Three upstream rows
+nevertheless offered it:
+
+| Row | Where | Gate |
+| --- | --- | --- |
+| "Who can find me by number?" | the profile screen right after sign-in, `profiles/edit/CreateProfileFragment.java` | `SwarmAccount.hasPhoneNumber()` in place of upstream's `isPhoneNumberless()` |
+| "Phone number" (who can see / find me by number) | Settings > Privacy, `PrivacySettingsViewModel.kt` (`hasPhoneNumber`) | `SwarmAccount.hasPhoneNumber()` |
+| "Change phone number" | Settings > Account, `feature/app-settings/.../AccountSettingsScreen.kt` | new `AccountSettingsState.isSwarmWalletAccount`, set by `AccountSettingsViewModel` from `AccountSettingsRepository.isSwarmWalletAccount()` |
+
+New `app/.../swarm/SwarmAccount.kt`: `isWalletAccount()` is true when the local identifier is a SWARM `+888`
+identifier (`SwarmWalletIdentity.isSwarmAccountIdentifier`, the same test `SignalE164Util.prettyPrint` uses to
+show "SWARM account"); `hasPhoneNumber()` is false for such an account and for upstream's phone-numberless
+accounts. The screens behind the rows (the phone-number privacy page, the change-number flow) stay in the tree,
+unreached, so upstream merges stay small; an account with a real number keeps all three rows.
+
+Deliberately not changed: a wallet account is not phone-numberless in upstream's sense (it has a PNI), so
+upstream's phone-numberless paths (ACI-only sealed-sender certificates, backup flows, the Signal Login and
+two-factor sections) stay off, and the stored phone-number discoverability setting and what
+`RefreshAttributesJob` sends are upstream's. The SWARM PIN rows under Settings > Account remain visible although
+SWARM runs no secure value recovery (proposed: hide them too).
+
+Tests: `SwarmPhoneNumberRowsTest` (a `+888` identifier is a wallet account without a phone number, a real number is
+not, no identifier is not; the Privacy state has no Phone number row for a wallet account and keeps it for a
+number), `AccountSettingsViewModelTest` (the state carries the flag, and nothing else about the account changes),
+`AccountSettingsScreenTest` (no Change phone number row for a wallet account, the row for an account with a
+number). The emulator smoke test fails if any of the three rows is on screen.
+
+---
+
+## 9. Messaging with the desktop, both ways (tested)
+
+**Status: tested on the staging server, 2026-09-28** (Opus M5-A2). No code change was needed for it: the proof
+is the emulator smoke test's messaging mode (section 1) against a desktop instance.
+
+Set-up: SWARM Messenger for desktop at `swarm-main` `e01c737c0`, one instance with a disposable wallet account and
+the username `a2desk.64`, driven through its own UI over Electron's DevTools protocol (no recovery phrase was
+ever read or captured). Android: emulator run
+[36371883078](https://github.com/Swarm-Official/swarm-messenger-android/actions/runs/36371883078) on `swarm-next`
+`acd2b46` (API 34 x86_64), which registered its own disposable account first.
+
+| Time (UTC) | What happened | Proven by |
+| --- | --- | --- |
+| 03:09:52 | Android: New chat > Find by username > `a2desk.64`; libsignal's gRPC `LookupUsernameHash` answered, the conversation opened | app log (`rust/net/chat/src/grpc.rs`), screenshot 11 |
+| 03:10:08 | Android sent `Hello from SWARM Android run 36371883078` (`IndividualSendJob`, timestamp 1790565008113) | app log, screenshot 12 |
+| 03:10:10 | Desktop: `got request /api/v1/message`, PreKey message decrypted, `handleDataMessage` for 1790565008113, shown as a message request from "M5 Smoke" | desktop log, desktop screenshots 07-08 |
+| 03:10:16 | Desktop: Accept, Accept | desktop screenshots 09-10 |
+| 03:10:19 | Desktop replied `Hello from SWARM desktop run 36371883078` through the composer (sealed sender, `PUT /v1/messages` 200) | desktop log, desktop screenshot 11 |
+| 03:10:20 | Android received it on its own connection (`IncomingMessageObserver` "Retrieved 1 envelopes", `MessageDecryptor` decrypted 1790565019531, delivery latency 6 ms) and sent delivery and read receipts, which the desktop logged | app log, desktop log |
+| 03:10:24 | Android showed the reply | screenshot 13, UI dump |
+| 03:10:38 | Android answered `Android received your reply run 36371883078`; the desktop received it (`handleDataMessage` 1790565038396) | app log, desktop log, desktop screenshot 12 |
+| 03:10:44 | Android's two messages read "Message read" and "Delivered" | screenshot 14, UI dump |
+
+This settles the question wave 1 left open: the account registered through wallet sign-in tells the server it
+fetches its own messages (FCM off, section 3) and its authenticated connection receives them.
+
+Seen in the same run, not fixed here (proposed):
+
+- Opening New chat and a conversation starts upstream's contact discovery (CDSI) refresh, which can only fail on
+  SWARM (`[cdsi] connection failed`: the CDSI host is the `.invalid` placeholder). When the system resolver fails,
+  libsignal then tries its DNS-over-HTTPS fallback, and the app's own `SequentialDns` asks `CustomDns("1.1.1.1")`,
+  so such failed lookups also go to Cloudflare's public resolver. A SWARM switch that skips contact discovery
+  entirely would remove both.
+- `contentproxy.chat.swarm.green` has no DNS record, so link previews and GIF search fail (the conversation screen
+  logs it on opening).

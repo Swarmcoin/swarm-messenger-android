@@ -37,7 +37,7 @@ list is a one-line change in `app/build.gradle.kts`.
 | Job          | What it does                                                                                                   |
 | ------------ | -------------------------------------------------------------------------------------------------------------- |
 | `apk`        | `assembleWebsiteProdDebug`, the SWARM endpoint scan over the shipped configuration (enforce mode), a check that `BuildConfig` names `https://chat.swarm.green` and libsignal's SWARM environment, then SHA-256 sums |
-| `unit-tests` | the app's own unit tests for the same variant, `:feature:registration`, `:lib:libsignal-service`, `:lib:network` (the SWARM tests are among them) |
+| `unit-tests` | the app's own unit tests for the same variant, `:feature:registration`, `:feature:app-settings`, `:lib:libsignal-service`, `:lib:network` (the SWARM tests are among them) |
 | `release`    | pushes to `swarm-main` only: refuses to go on unless the scan ran in enforce mode with no failure and the build is a SWARM build, then publishes a GitHub **pre-release** tagged `swarm-messenger-android-<yyyymmdd>-<shortsha>` with the APKs, `SHA256SUMS.txt`, the scan output and the `BuildConfig` endpoint lines |
 
 A change goes to `swarm-next` first; `swarm-main` fast-forwards to it once that commit is green. Pull
@@ -46,8 +46,23 @@ request runs build and test but publish nothing.
 `.github/workflows/swarm-emulator-smoke.yml` is the end-to-end proof: it builds the same APK, boots an
 API 34 x86_64 emulator on a hosted runner (KVM), and `scripts/swarm/emulator_smoke.py` creates a
 **disposable** SWARM wallet account on `chat.swarm.green` through the real screens, names the profile and
-waits for the conversation list. Screenshots, UI dumps and the app's log lines are the run's artifact. It
-creates a real account on the staging server, so it runs only on a push to `swarm-smoke` or by hand.
+waits for the conversation list. On the way it checks that FCM never reads as on, that the authenticated chat
+connection opens, and that no screen shows the `+888` identifier, Donate, Payments or a phone-number row.
+Screenshots, UI dumps and the app's log lines are the run's artifact. It creates a real account on the staging
+server, so it runs only on a push to `swarm-smoke` or by hand.
+
+A manual run can also prove messaging with another SWARM account, normally a desktop instance someone is
+watching. Give the peer's full username (digits included):
+
+```sh
+gh workflow run swarm-emulator-smoke.yml --ref swarm-next -f peer_username=name.42 -f reply_wait_seconds=1500
+```
+
+After registering, the app opens New chat > Find by username, looks the peer up and sends
+`Hello from SWARM Android run <run id>`. On the peer's side, accept the message request and reply with a message
+that contains the word `desktop` (for example `Hello from SWARM desktop run <run id>`) within
+`reply_wait_seconds`. The app shows the reply, answers `Android received your reply run <run id>`, and records
+the delivery state of its own messages. No reply in time fails the run.
 
 libsignal is the SWARM build (`org.signal:libsignal-android` `0.102.2-swarm.1` from
 `https://raw.githubusercontent.com/Swarm-Official/swarm-libsignal/maven/`, pinned in

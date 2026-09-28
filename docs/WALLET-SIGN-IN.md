@@ -131,21 +131,25 @@ emulator against `chat.swarm.green`: welcome, "Create a new wallet", "written do
 own log must show the challenge, the answer and the registration, the profile screen and the conversation
 list must appear, the message observer must never report FCM on, and no screen may show "+888". It creates a
 disposable account each time. The first run (2026-09-27, commit `2738c5a`) registered and reached the
-conversation list; the wallet screens themselves are `FLAG_SECURE`, so their screenshots come out empty.
+conversation list; the wallet screens themselves are `FLAG_SECURE`, so their screenshots come out empty. On
+2026-09-28 (run 36371883078, commit `acd2b46`) the same test, given a desktop account's username, found it by
+username, sent it a message, received the desktop's reply and answered: an account made by wallet sign-in sends
+and receives (`SWARM-CHANGES.md`, section 9).
 
 ## 6. Not in wave 1
 
 - Mounting the SWARM wallet itself in the app (the phrase opens the wallet too, but there is no wallet
   screen yet).
-- Finding people by wallet address (server-side address-hash lookup, wave 2); usernames need the SWARM
-  server's gRPC routes (see the libsignal notes in `SWARM-CHANGES.md`).
+- Finding people by wallet address (server-side address-hash lookup, wave 2). Finding them by username works:
+  New chat > Find by username goes through libsignal's gRPC `LookupUsernameHash` on the SWARM server (tested
+  2026-09-28). Taking a username on Android has not been tried yet.
 - The identifier after registration: `SignalE164Util.prettyPrint`, which every screen uses to show a number
   (the settings header, conversation headers, the about sheet, a contact's fallback name), shows "SWARM
-  account" for any `+888` identifier instead. Not yet done: hiding the Account settings rows that are about
-  phone numbers ("Change phone number", phone-number privacy), which do nothing useful for a SWARM account,
-  and an audit for any screen that prints the raw number without `prettyPrint`. The profile screen after
-  sign-in still offers "Who can find me by number?"; nobody can, since the SWARM server has no contact
-  discovery, but the row should go.
+  account" for any `+888` identifier instead. Since wave 1b (2026-09-28) the rows that are about a phone
+  number are hidden for a SWARM account: "Who can find me by number?" on the profile screen after sign-in,
+  Settings > Privacy > "Phone number" and Settings > Account > "Change phone number" (`SWARM-CHANGES.md`,
+  section 8). Not yet done: an audit for any screen that prints the raw number without `prettyPrint`, and the
+  SWARM PIN rows under Settings > Account (SWARM runs no secure value recovery).
 - Storage service: `chat.swarm.green` answers `404` to `GET /v1/storage/manifest` and `PUT /v1/storage` (no
   storage service deployed). The app carries on without it; settings and contacts are not synced to the server
   until one exists.
