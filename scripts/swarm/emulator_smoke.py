@@ -44,6 +44,9 @@ class Ui:
     def __init__(self, out):
         self.out = out
         self.step = 0
+        # Every screen the test sees is checked for the account identifier: a SWARM account's +888 number must never
+        # be shown (docs/WALLET-SIGN-IN.md).
+        self.identifier_seen = []
 
     def dump(self):
         for attempt in range(5):
@@ -51,7 +54,14 @@ class Ui:
                 adb("shell", "uiautomator", "dump", "/sdcard/ui.xml", timeout=60)
                 xml = adb("shell", "cat", "/sdcard/ui.xml", timeout=30).decode("utf-8", errors="replace")
                 start = xml.find("<?xml")
-                return ET.fromstring(xml[start:] if start >= 0 else xml)
+                root = ET.fromstring(xml[start:] if start >= 0 else xml)
+                for node in root.iter("node"):
+                    for attribute in ("text", "content-desc"):
+                        value = node.get(attribute, "")
+                        if re.search(r"\+\s*888", value) and value not in self.identifier_seen:
+                            log(f"the account identifier is on screen: {value!r}")
+                            self.identifier_seen.append(value)
+                return root
             except Exception as error:  # noqa: BLE001 - uiautomator is flaky while the screen changes
                 log(f"ui dump failed ({error}); retrying")
                 time.sleep(2)
@@ -228,6 +238,19 @@ def main():
     log(f"FCM as the message observer saw it: {sorted(set(fcm_states)) or 'not logged'}")
     if "true" in fcm_states:
         raise RuntimeError("the app reported FCM: true; SWARM Messenger must never rely on FCM")
+
+    # The settings page names the account under the profile name; for a SWARM account that must read "SWARM account".
+    try:
+        ui.tap_when_present("Settings shortcut", timeout=30, desc="Settings shortcut")
+        time.sleep(3)
+        ui.screenshot("settings")
+        ui.save_dump("settings")
+    except Exception as error:  # noqa: BLE001 - the settings page is extra evidence, not the proof itself
+        log(f"could not open the settings page: {error}")
+
+    if ui.identifier_seen:
+        raise RuntimeError(f"the +888 account identifier was shown on screen: {ui.identifier_seen}")
+    log("the +888 account identifier never appeared on screen")
     return 0
 
 
