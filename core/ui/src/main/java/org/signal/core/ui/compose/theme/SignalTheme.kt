@@ -81,12 +81,14 @@ private val typography = Typography().run {
 }
 
 // SWARM: Hive Orange is the accent. The light scheme uses a deeper shade of it (#B85300) so text and
-// icons drawn in the primary colour stay legible on light surfaces (4.9:1 against white).
+// icons drawn in the primary colour stay legible on light surfaces (4.9:1 against white). The secondary
+// colours keep upstream's lightness and chroma with the hue turned from blue to Hive Orange's, so every
+// contrast ratio is upstream's.
 private val lightColorScheme = lightColorScheme(
   primary = Color(0xFFB85300),
   primaryContainer = Color(0xFFFFDCC5),
-  secondary = Color(0xFF586071),
-  secondaryContainer = Color(0xFFDCE5F9),
+  secondary = Color(0xFF6E5C51),
+  secondaryContainer = Color(0xFFF6E1D3),
   surface = Color(0xFFFBFCFF),
   surfaceContainerLow = Color(0xFFF2F5F9),
   surfaceContainerHighest = Color(0xFFE7EBF3),
@@ -97,7 +99,7 @@ private val lightColorScheme = lightColorScheme(
   onPrimary = Color(0xFFFFFFFF),
   onPrimaryContainer = Color(0xFF3A1800),
   onSecondary = Color(0xFFFFFFFF),
-  onSecondaryContainer = Color(0xFF151D2C),
+  onSecondaryContainer = Color(0xFF281A0E),
   onSurface = Color(0xFF1B1B1D),
   onSurfaceVariant = Color(0xFF545863),
   onBackground = Color(0xFF1B1D1D),
@@ -170,8 +172,8 @@ private val darkExtendedColors = ExtendedColors(
 private val darkColorScheme = darkColorScheme(
   primary = Color(0xFFFF8A1F),
   primaryContainer = Color(0xFF5C2D00),
-  secondary = Color(0xFFC1C6DD),
-  secondaryContainer = Color(0xFF414659),
+  secondary = Color(0xFFDAC2B3),
+  secondaryContainer = Color(0xFF554336),
   surface = Color(0xFF1B1C1F),
   surfaceContainerLow = Color(0xFF23242A),
   surfaceContainerHighest = Color(0xFF303133),
@@ -181,8 +183,8 @@ private val darkColorScheme = darkColorScheme(
   errorContainer = Color(0xFF930006),
   onPrimary = Color(0xFF0A0908),
   onPrimaryContainer = Color(0xFFFFDCC5),
-  onSecondary = Color(0xFF2A3042),
-  onSecondaryContainer = Color(0xFFDCE1F9),
+  onSecondary = Color(0xFF3E2D21),
+  onSecondaryContainer = Color(0xFFF6DDCD),
   onSurface = Color(0xFFE2E1E5),
   onSurfaceVariant = Color(0xFFBEBFC5),
   onBackground = Color(0xFFE2E1E5),

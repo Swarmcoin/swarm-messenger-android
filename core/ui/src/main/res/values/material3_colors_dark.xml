@@ -2,8 +2,8 @@
 <resources>
     <color name="signal_dark_colorPrimary">#FF8A1F</color>
     <color name="signal_dark_colorPrimaryContainer">#5C2D00</color>
-    <color name="signal_dark_colorSecondary">#C1C6DD</color>
-    <color name="signal_dark_colorSecondaryContainer">#414659</color>
+    <color name="signal_dark_colorSecondary">#DAC2B3</color>
+    <color name="signal_dark_colorSecondaryContainer">#554336</color>
     <color name="signal_dark_colorSurface">#1B1C1F</color>
     <color name="signal_dark_colorSurfaceVariant">#303133</color>
     <color name="signal_dark_colorSurfaceVariantFill">#33FFFFFF</color>
@@ -12,8 +12,8 @@
     <color name="signal_dark_colorErrorContainer">#930006</color>
     <color name="signal_dark_colorOnPrimary">#0A0908</color>
     <color name="signal_dark_colorOnPrimaryContainer">#FFDCC5</color>
-    <color name="signal_dark_colorOnSecondary">#2A3042</color>
-    <color name="signal_dark_colorOnSecondaryContainer">#DCE1F9</color>
+    <color name="signal_dark_colorOnSecondary">#3E2D21</color>
+    <color name="signal_dark_colorOnSecondaryContainer">#F6DDCD</color>
     <color name="signal_dark_colorOnSurface">#E2E1E5</color>
     <color name="signal_dark_colorOnSurfaceVariant">#BEBFC5</color>
     <color name="signal_dark_colorOnSurfaceVariant1">#4D5059</color>

@@ -2,8 +2,8 @@
 <resources>
     <color name="signal_light_colorPrimary">#B85300</color>
     <color name="signal_light_colorPrimaryContainer">#FFDCC5</color>
-    <color name="signal_light_colorSecondary">#586071</color>
-    <color name="signal_light_colorSecondaryContainer">#DCE5F9</color>
+    <color name="signal_light_colorSecondary">#6E5C51</color>
+    <color name="signal_light_colorSecondaryContainer">#F6E1D3</color>
     <color name="signal_light_colorSurface">#FBFCFF</color>
     <color name="signal_light_colorSurfaceVariant">#E7EBF3</color>
     <color name="signal_light_colorSurfaceVariantFill">#CCFFFFFF</color>
@@ -13,7 +13,7 @@
     <color name="signal_light_colorOnPrimary">#FFFFFF</color>
     <color name="signal_light_colorOnPrimaryContainer">#3A1800</color>
     <color name="signal_light_colorOnSecondary">#FFFFFF</color>
-    <color name="signal_light_colorOnSecondaryContainer">#151D2C</color>
+    <color name="signal_light_colorOnSecondaryContainer">#281A0E</color>
     <color name="signal_light_colorOnSurface">#1B1B1D</color>
     <color name="signal_light_colorOnSurfaceVariant">#545863</color>
     <color name="signal_light_colorOnSurfaceVariant1">#BBBFC8</color>

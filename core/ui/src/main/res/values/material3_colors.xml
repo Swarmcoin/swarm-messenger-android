@@ -52,7 +52,7 @@
     <color name="signal_colorErrorContainerInverse">@color/signal_dark_colorErrorContainer</color>
 
     <!-- Core color alpha variants -->
-    <color name="signal_colorSecondaryContainer_12">#1FDCE5F9</color>
+    <color name="signal_colorSecondaryContainer_12">#1FF6E1D3</color>
     <color name="signal_colorSurface_60">#99FBFCFF</color>
     <color name="signal_colorSurfaceVariant_38">#61E7EBF3</color>
     <color name="signal_colorSurfaceVariant_64">#A3E7EBF3</color>
