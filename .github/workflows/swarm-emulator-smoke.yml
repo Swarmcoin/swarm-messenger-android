@@ -7,6 +7,11 @@
 #
 # It talks to the real SWARM staging server and creates a real (disposable) account there, so it only runs when
 # someone asks: a push to branch swarm-smoke, or a manual run.
+#
+# A manual run can also message another SWARM account (normally a desktop instance someone is watching): give its
+# username as peer_username. The app then opens New chat > Find by username, sends a text, waits up to
+# reply_wait_seconds for a reply that contains the word "desktop", and answers once more.
+#   gh workflow run swarm-emulator-smoke.yml --ref swarm-next -f peer_username=name.42
 name: SWARM emulator smoke test
 
 on:
@@ -14,6 +19,15 @@ on:
     branches:
       - swarm-smoke
   workflow_dispatch:
+    inputs:
+      peer_username:
+        description: "SWARM username to message after registering (for example a desktop's name.42); empty: no messaging"
+        required: false
+        default: ""
+      reply_wait_seconds:
+        description: "How long the app waits for the peer's reply"
+        required: false
+        default: "1200"
 
 permissions:
   contents: read
@@ -92,7 +106,11 @@ jobs:
           force-avd-creation: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -no-snapshot
           disable-animations: true
-          script: python3 scripts/swarm/emulator_smoke.py --apk "${{ steps.apk.outputs.apk }}" --out smoke-out
+          script: python3 scripts/swarm/emulator_smoke.py --apk "${{ steps.apk.outputs.apk }}" --out smoke-out --peer-username "$PEER_USERNAME" --reply-wait "$REPLY_WAIT"
+        env:
+          # Passed through the environment, not pasted into the command line.
+          PEER_USERNAME: ${{ inputs.peer_username }}
+          REPLY_WAIT: ${{ inputs.reply_wait_seconds || '1200' }}
 
       - name: Keep the evidence
         if: ${{ always() }}
