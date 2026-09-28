@@ -28,6 +28,7 @@ import org.thoughtcrime.securesms.jobmanager.impl.RegisteredConstraint
 import org.thoughtcrime.securesms.jobs.PreKeysSyncJob
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.service.KeyCachingService
+import org.thoughtcrime.securesms.swarm.SwarmBuild
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.whispersystems.signalservice.api.push.ServiceIds
 import org.whispersystems.signalservice.api.push.SignalServiceAddress
@@ -455,9 +456,18 @@ class AccountValues internal constructor(store: KeyValueStore, context: Context)
     override var lastResortKyberPreKeyRotationTime: Long by longValue(KEY_PNI_LAST_RESORT_KYBER_PREKEY_ROTATION_TIME, 0)
   }
 
+  private var storedFcmEnabled: Boolean by booleanValue(KEY_FCM_ENABLED, false)
+
   /** Indicates whether the user has the ability to receive FCM messages. Largely coupled to whether they have Play Service. */
   @get:JvmName("isFcmEnabled")
-  var fcmEnabled: Boolean by booleanValue(KEY_FCM_ENABLED, false)
+  var fcmEnabled: Boolean
+    // SWARM: never FCM (SwarmBuild.FCM). Upstream's first-launch migration stores true here, and the new registration
+    // flow never resets it, so without this the app would drop its connection in the background and tell the server
+    // it does not fetch messages, leaving the account with no way to receive them.
+    get() = SwarmBuild.FCM && storedFcmEnabled
+    set(value) {
+      storedFcmEnabled = value
+    }
 
   /** The FCM token, which allows the server to send us FCM messages. */
   var fcmToken: String?

@@ -220,6 +220,14 @@ def main():
 
     time.sleep(10)
     ui.screenshot("conversation-list-settled")
+
+    # SWARM Messenger never uses FCM. If the app believed FCM was on, it would tell the server it does not fetch its
+    # messages and drop its connection in the background, and the new account could not receive anything.
+    raw = adb("logcat", "-d", "-v", "time", timeout=120).decode("utf-8", errors="replace")
+    fcm_states = re.findall(r"IncomingMessageObserver.*FCM: (true|false)", raw)
+    log(f"FCM as the message observer saw it: {sorted(set(fcm_states)) or 'not logged'}")
+    if "true" in fcm_states:
+        raise RuntimeError("the app reported FCM: true; SWARM Messenger must never rely on FCM")
     return 0
 
 

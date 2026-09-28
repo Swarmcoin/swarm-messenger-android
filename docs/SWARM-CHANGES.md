@@ -153,6 +153,7 @@ gone: `getConfiguration()` always returns the SWARM configuration and `isCensore
 | `AndroidManifest.xml` | Signal's `FcmReceiveService` and the two `firebase_*` meta-data removed. The firebase-messaging library's `FirebaseMessagingService`, `ComponentDiscoveryService`, `FirebaseInstanceIdReceiver`, `FirebaseInitProvider`, Google data-transport components and the `c2dm` permission are removed from the merged manifest with `tools:node="remove"` |
 | `core/util/.../PlayServicesUtil.java` | always reports Play services missing, which puts the whole app on upstream's own path for phones without them: messages arrive over the persistent websocket |
 | `app/.../gcm/FcmUtil.java` | returns no token, without touching Firebase |
+| `swarm/SwarmBuild.kt` (`FCM = false`), `keyvalue/AccountValues.kt`, `ApplicationContext.java` | `fcmEnabled` always reads false, and the start-up FCM token check returns at once. Upstream's first-launch migration stores `fcmEnabled = true`, and the new registration flow never resets it; the emulator smoke test showed the app then reporting "FCM: true" after registering. That would drop the websocket in the background and send `fetchesMessages: false` to the server, leaving the account's only device with no way to receive messages. Test: `SwarmNoFcmTest` |
 
 The library code still ships in the APK (every upstream flavor depends on it); nothing can start it.
 
