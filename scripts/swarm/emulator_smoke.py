@@ -248,6 +248,11 @@ def main():
     except Exception as error:  # noqa: BLE001 - the settings page is extra evidence, not the proof itself
         log(f"could not open the settings page: {error}")
 
+    settings = ui.nodes()
+    donate = [n.get("text") for n in settings if "donate" in n.get("text", "").lower()]
+    if donate:
+        raise RuntimeError(f"the settings page offers donations: {donate}")
+
     if ui.identifier_seen:
         raise RuntimeError(f"the +888 account identifier was shown on screen: {ui.identifier_seen}")
     log("the +888 account identifier never appeared on screen")

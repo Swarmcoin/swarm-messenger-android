@@ -78,6 +78,7 @@ import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.profiles.ProfileName
 import org.thoughtcrime.securesms.recipients.Recipient
+import org.thoughtcrime.securesms.swarm.SwarmBuild
 import org.thoughtcrime.securesms.util.CommunicationActions
 import org.thoughtcrime.securesms.util.SignalE164Util
 import org.thoughtcrime.securesms.util.navigation.safeNavigate
@@ -318,7 +319,9 @@ private fun AppSettingsContent(
           }
         }
 
-        item {
+        // SWARM: no donations (SwarmBuild.DONATIONS). Upstream's row pays Signal; here it would have opened swarm.green
+        // under "Donate to SWARM Messenger", where there is nothing to donate to.
+        if (SwarmBuild.DONATIONS) item {
           val context = LocalContext.current
           val donateUrl = stringResource(R.string.donate_url)
 

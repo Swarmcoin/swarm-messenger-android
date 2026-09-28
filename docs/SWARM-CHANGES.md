@@ -165,7 +165,7 @@ The library code still ships in the APK (every upstream flavor depends on it); n
 | `service/webrtc/CallingAssets.kt` | the calling model comes from `SWARM_STATIC_HOST` (its SHA-512 digest still pins the bytes) |
 | `AndroidManifest.xml` | the https app links for `signal.art`, `signal.group`, `signal.me`, `signal.link`, `signal.tube` and `signaldonations.org` are removed. With `autoVerify`, Android fetched `/.well-known/assetlinks.json` from each of those Signal hosts when the app was installed. The `sgnl://` deep links stay: nothing is fetched through them |
 | 29 source files | every support-article link in code points at `https://swarm.green/support`, legal links at `https://swarm.green/legal`, download links at `https://swarm.green`, the debug-log address at `support@swarm.green` |
-| `InAppDonations.kt`, `SwarmBuild.DONATIONS = false` | donations pay Signal Technology Foundation through Signal's Stripe and PayPal accounts, so no payment method is ever offered and every donation entry point stays hidden |
+| `InAppDonations.kt`, `AppSettingsFragment.kt`, `SwarmBuild.DONATIONS = false` | donations pay Signal Technology Foundation through Signal's Stripe and PayPal accounts, so no payment method is ever offered and every donation entry point stays hidden. The Settings row "Donate to ..." is not built at all: the emulator run of 2026-09-28 showed it still there as "Donate to SWARM Messenger", opening swarm.green, where there is nothing to donate to |
 
 Still in code on purpose: `StickerUrl.java` builds `signal.art` sticker-pack share links and the username
 link is `signal.me` (links that Signal-protocol apps understand; nothing is fetched from them), the
