@@ -73,6 +73,11 @@ OVERRIDES = {
     # attribution instead (swarm_strings.xml); the welcome screen keeps only the link text.
     "HelpSettingsFragment__signal_is_a_501c3": "SWARM Messenger is based on Signal by Signal Messenger, LLC",
     "RegistrationActivity_terms_and_privacy": "Terms &amp; Privacy Policy",
+    # The banner every SWARM Messenger user sees until battery optimisation is off. Upstream shows it only on
+    # phones without Google Play services and says the device lacks them; SWARM Messenger shows it everywhere,
+    # because it never uses them.
+    "DozeReminder_optimize_for_missing_play_services": "Keep messages arriving",
+    "DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery": "SWARM Messenger does not use Google push messaging. Tap to turn off battery optimization for it, so it can keep its own connection and receive messages while inactive.",
 }
 
 TOKEN_RE = re.compile(r"(<!--.*?-->|<!\[CDATA\[.*?\]\]>|<[^>]*>)", re.DOTALL)

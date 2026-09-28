@@ -1139,8 +1139,8 @@
     <string name="DocumentView_document_file">Document file</string>
 
     <!-- DozeReminder -->
-    <string name="DozeReminder_optimize_for_missing_play_services">Optimize for missing Play Services</string>
-    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">This device does not support Play Services. Tap to disable system battery optimizations that prevent SWARM Messenger from retrieving messages while inactive.</string>
+    <string name="DozeReminder_optimize_for_missing_play_services">Keep messages arriving</string>
+    <string name="DozeReminder_this_device_does_not_support_play_services_tap_to_disable_system_battery">SWARM Messenger does not use Google push messaging. Tap to turn off battery optimization for it, so it can keep its own connection and receive messages while inactive.</string>
 
     <!-- ExpiredBuildReminder -->
     <string name="ExpiredBuildReminder_this_version_of_signal_has_expired">This version of SWARM Messenger has expired. Update now to send and receive messages.</string>
